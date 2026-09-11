@@ -86,3 +86,6 @@ apikey.properties
 # Local machine paths (jangan di-commit)
 android/local.properties
 ios/Flutter/Flutter.podspec
+
+# Firebase options (generated — di-trigger ulang via flutterfire configure)
+lib/firebase_options.dart
