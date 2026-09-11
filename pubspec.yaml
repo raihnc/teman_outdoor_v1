@@ -1,0 +1,44 @@
+name: teman_outdoor_v1
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  firebase_core: ^3.15.2
+  firebase_auth: ^5.7.0
+  cloud_firestore: ^5.6.12
+  get: ^4.6.5
+
+  cached_network_image: ^3.4.1
+  image_picker: ^1.2.3
+  carousel_slider: ^5.1.1
+  shimmer: ^3.0.0
+  ionicons: ^0.2.2
+  fluttertoast: ^8.2.2
+  loading_indicator: ^3.1.1
+
+  onesignal_flutter: ^5.0.0
+  intl: ^0.20.2
+  google_fonts: ^6.2.1
+  cloudinary_public: ^0.23.1
+  flutter_dotenv: ^5.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  change_app_package_name: ^1.4.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - .env

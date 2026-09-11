@@ -1,0 +1,88 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# ═══════════════════════════════════════════════════════
+# SENSITIVE — jangan pernah di-publish / di-commit
+# ═══════════════════════════════════════════════════════
+
+# Env & secrets (.env.example tetap di-track sebagai template)
+.env*
+!.env.example
+*.secret
+*.secret.*
+
+# Firebase config per-platform (berisi API key aplikasi)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+android/app/firebase.json
+web/firebase-config.js
+
+# Firebase service account / admin SDK private keys
+**/firebase-adminsdk-*.json
+**/*firebase-service-account*.json
+**/*-service-account-key*.json
+**/serviceAccountKey.json
+**/service_account*.json
+
+# Android signing keystore & config
+android/key.properties
+apikey.properties
+*.jks
+*.keystore
+*.keystore.jks
+*.pkcs12
+
+# Private keys & certificates
+*.pem
+*.key
+*.p12
+*.p8
+*.crt
+
+# Local machine paths (jangan di-commit)
+android/local.properties
+ios/Flutter/Flutter.podspec

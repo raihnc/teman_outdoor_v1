@@ -1,0 +1,162 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ═══════════════════════════════════════════
+    // Helper functions
+    // ═══════════════════════════════════════════
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isRenter() {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'renter';
+    }
+
+    // ═══════════════════════════════════════════
+    // Users collection
+    // ═══════════════════════════════════════════
+    match /users/{userId} {
+      // Read: owner atau admin
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Create: saat registrasi, user create doc sendiri
+      allow create: if isAuthenticated() && request.auth.uid == userId
+        && request.resource.data.role == 'renter'
+        && request.resource.data.keys().hasAll(['name', 'email', 'phone', 'photoUrl', 'role']);
+
+      // Update: owner bisa edit profile sendiri, admin bisa edit semua
+      allow update: if isOwner(userId) || isAdmin();
+
+      // Delete: tidak diizinkan
+      allow delete: if false;
+
+      // ── Wishlist subcollection ──
+      match /wishlist/{docId} {
+        // Read/write: hanya owner
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    // Products collection
+    // ═══════════════════════════════════════════
+    match /products/{productId} {
+      // Read: semua authenticated user
+      allow read: if isAuthenticated();
+
+      // Create/update/delete: admin only
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasAll([
+          'name', 'description', 'pricePerDay', 'category',
+          'stock', 'specs', 'images', 'thumbnailUrl', 'isActive',
+          'averageRating', 'totalReviews', 'totalBooked'
+        ]);
+
+      allow update: if isAdmin();
+
+      allow delete: if isAdmin();
+    }
+
+    // ═══════════════════════════════════════════
+    // Bookings collection
+    // ═══════════════════════════════════════════
+    match /bookings/{bookingId} {
+      // Read: owner booking atau admin
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+
+      // Create: authenticated user, harus isi userId sendiri
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasAll([
+          'userId', 'productId', 'productName', 'status',
+          'totalPrice', 'startDate', 'endDate', 'createdAt'
+        ])
+        && request.resource.data.status == 'pending';
+
+      // Update: admin bisa update status apapun, renter hanya bisa cancel
+      allow update: if isAuthenticated() && (
+        isAdmin()
+        || (
+          resource.data.userId == request.auth.uid
+          && resource.data.status == 'pending'
+          && request.resource.data.status == 'cancelled'
+        )
+      );
+
+      // Delete: tidak diizinkan
+      allow delete: if false;
+    }
+
+    // ═══════════════════════════════════════════
+    // Reviews collection
+    // ═══════════════════════════════════════════
+    match /reviews/{reviewId} {
+      // Read: semua authenticated user
+      allow read: if isAuthenticated();
+
+      // Create: authenticated user, harus isi userId sendiri
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasAll([
+          'userId', 'productId', 'rating', 'comment', 'createdAt'
+        ])
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5;
+
+      // Update: tidak diizinkan (no edit review)
+      allow update: if false;
+
+      // Delete: owner atau admin
+      allow delete: if (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+    }
+
+    // ═══════════════════════════════════════════
+    // Banners collection
+    // ═══════════════════════════════════════════
+    match /banners/{bannerId} {
+      // Read: semua authenticated user
+      allow read: if isAuthenticated();
+
+      // CRUD: admin only
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ═══════════════════════════════════════════
+    // Categories collection
+    // ═══════════════════════════════════════════
+    match /categories/{categoryId} {
+      // Read: semua authenticated user
+      allow read: if isAuthenticated();
+
+      // CRUD: admin only
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ═══════════════════════════════════════════
+    // App Config collection
+    // ═══════════════════════════════════════════
+    match /app_config/{configId} {
+      // Read: semua authenticated user
+      allow read: if isAuthenticated();
+
+      // Update: admin only
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

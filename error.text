@@ -1,0 +1,20 @@
+Launching lib/main.dart on M2101K6G (wireless) in debug mode...
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+D/FlutterJNI( 1630): Beginning load of flutter...
+D/FlutterJNI( 1630): flutter (null) was loaded normally!
+I/flutter ( 1630): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+Connecting to VM Service at ws://127.0.0.1:57237/ajGpV7pxuBU=/ws
+Connected to the VM Service.
+D/ProfileInstaller( 1630): Installing profile for com.example.teman_outdoor_v1
+E/flutter ( 1630): [ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: Instance of 'FileNotFoundError'
+E/flutter ( 1630): #0      DotEnv._getEntriesFromFile (package:flutter_dotenv/src/dotenv.dart:172:7)
+E/flutter ( 1630): <asynchronous suspension>
+E/flutter ( 1630): #1      DotEnv.load (package:flutter_dotenv/src/dotenv.dart:124:23)
+E/flutter ( 1630): <asynchronous suspension>
+E/flutter ( 1630): #2      main (package:teman_outdoor_v1/main.dart:14:3)
+E/flutter ( 1630): <asynchronous suspension>
+E/flutter ( 1630):
+W/FinalizerDaemon( 1630): type=1400 audit(0.0:6933): avc: denied { getopt } for path="/dev/socket/usap_pool_primary" scontext=u:r:untrusted_app:s0:c24,c257,c512,c768 tcontext=u:r:zygote:s0 tclass=unix_stream_socket permissive=0
+D/VRI[MainActivity]( 1630): vri.reportNextDraw android.view.ViewRootImpl.handleResized:1936 android.view.ViewRootImpl.-$$Nest$mhandleResized:0 android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:5860 android.view.ViewRootImpl$ViewRootHandler.handleMessage:5829 android.os.Handler.dispatchMessage:106 
+D/VRI[MainActivity]( 1630): vri.reportNextDraw android.view.ViewRootImpl.handleResized:1936 android.view.ViewRootImpl.-$$Nest$mhandleResized:0 android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:5860 android.view.ViewRootImpl$ViewRootHandler.handleMessage:5829 android.os.Handler.dispatchMessage:106 
+D/VRI[MainActivity]( 1630): vri.reportNextDraw android.view.ViewRootImpl.handleResized:1936 android.view.ViewRootImpl.-$$Nest$mhandleResized:0 android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:5860 android.view.ViewRootImpl$ViewRootHandler.handleMessage:5829 android.os.Handler.dispatchMessage:106
