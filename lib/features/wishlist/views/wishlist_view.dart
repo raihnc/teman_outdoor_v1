@@ -32,7 +32,10 @@ class WishlistView extends StatelessWidget {
       builder: (controller) {
         final screen = context.screen;
         return Scaffold(
-          appBar: AppBar(title: const Text('Wishlist')),
+          appBar: AppBar(
+            title: const Text('Wishlist'),
+            surfaceTintColor: Colors.transparent,
+          ),
           body: Obx(() {
             if (controller.isLoading.value) {
               return GridView.builder(

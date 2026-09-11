@@ -20,7 +20,7 @@ class AdminOrderListView extends StatelessWidget {
       init: Get.find<AdminOrderController>(),
       builder: (controller) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Kelola Pesanan')),
+          appBar: AppBar(title: const Text('Kelola Pesanan'), surfaceTintColor: Colors.transparent),
           body: Column(
             children: [
               _buildStatusFilter(context, controller),

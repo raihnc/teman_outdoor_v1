@@ -32,7 +32,7 @@ class OrderDetailView extends StatelessWidget {
       init: Get.find<OrdersController>(),
       builder: (controller) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Detail Pesanan')),
+          appBar: AppBar(title: const Text('Detail Pesanan'), surfaceTintColor: Colors.transparent),
           body: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
               context.screen.pagePadding,

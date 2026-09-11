@@ -19,6 +19,7 @@ class AdminProductListView extends StatelessWidget {
       builder: (controller) {
         return Scaffold(
           appBar: AppBar(
+            surfaceTintColor: Colors.transparent,
             title: const Text('Kelola Produk'),
             actions: [
               IconButton(

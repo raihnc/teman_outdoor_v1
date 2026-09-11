@@ -119,6 +119,7 @@ class _AdminProductFormViewState extends State<AdminProductFormView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Edit Produk' : 'Tambah Produk'),
+        surfaceTintColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

@@ -32,6 +32,7 @@ class CatalogView extends StatelessWidget {
         final screen = context.screen;
         return Scaffold(
           appBar: AppBar(
+            surfaceTintColor: Colors.transparent,
             title: const Text('Katalog'),
             actions: [
               PopupMenuButton<String>(

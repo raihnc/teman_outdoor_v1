@@ -32,6 +32,7 @@ class SearchView extends StatelessWidget {
     );
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: TextField(
           onChanged: controller.setSearchQuery,
           decoration: const InputDecoration(

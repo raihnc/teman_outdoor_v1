@@ -73,6 +73,7 @@ class ProductDetailView extends StatelessWidget {
     final product = controller.product;
     final screen = context.screen;
     return SliverAppBar(
+      surfaceTintColor: Colors.transparent,
       expandedHeight: screen.isSmallPhone ? 260 : 320,
       pinned: true,
       actions: [

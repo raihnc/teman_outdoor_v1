@@ -18,7 +18,7 @@ class AdminBannerView extends StatelessWidget {
       init: Get.find<AdminBannerController>(),
       builder: (controller) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Kelola Banner')),
+          appBar: AppBar(title: const Text('Kelola Banner'), surfaceTintColor: Colors.transparent,),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               final picker = ImagePicker();

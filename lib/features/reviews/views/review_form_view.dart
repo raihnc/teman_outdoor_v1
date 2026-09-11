@@ -35,7 +35,7 @@ class ReviewFormView extends StatelessWidget {
         ),
       builder: (controller) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Beri Ulasan')),
+          appBar: AppBar(title: const Text('Beri Ulasan'), surfaceTintColor: Colors.transparent),
           body: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
               context.screen.pagePadding,

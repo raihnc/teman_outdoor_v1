@@ -20,7 +20,7 @@ class AdminOrderDetailView extends StatelessWidget {
       builder: (controller) {
         final nextStatus = _getNextStatus(booking.status);
         return Scaffold(
-          appBar: AppBar(title: const Text('Detail Pesanan')),
+          appBar: AppBar(title: const Text('Detail Pesanan'), surfaceTintColor: Colors.transparent,),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(

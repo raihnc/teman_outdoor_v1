@@ -40,73 +40,81 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       ),
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('Lupa Password')),
+      appBar: AppBar(
+        title: const Text('Lupa Password'),
+        surfaceTintColor: Colors.transparent,
+      ),
       body: SafeArea(
         child: ResponsiveBuilder(
           builder: (context, screen) {
             return SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: screen.pagePadding + (screen.isLargePhone ? 8 : 0),
-          ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
-              child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 32),
-                const Icon(
-                  Ionicons.key_outline,
-                  size: 48,
-                  color: AppColors.primary,
+              padding: EdgeInsets.symmetric(
+                horizontal: screen.pagePadding + (screen.isLargePhone ? 8 : 0),
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 32),
+                        const Icon(
+                          Ionicons.key_outline,
+                          size: 48,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Reset Password',
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Masukkan email Anda dan kami akan mengirimkan link untuk reset password.',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 32),
+                        CustomTextField(
+                          label: 'Email',
+                          hint: 'Masukkan email terdaftar',
+                          controller: _emailCtrl,
+                          keyboardType: TextInputType.emailAddress,
+                          prefix: const Icon(Ionicons.mail_outline, size: 20),
+                          validator: (v) {
+                            if (v == null || v.isEmpty)
+                              return 'Email wajib diisi';
+                            if (!GetUtils.isEmail(v))
+                              return 'Email tidak valid';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        Obx(
+                          () => CustomButton(
+                            label: 'Kirim Link Reset',
+                            isLoading: _authController.isLoading.value,
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _authController.resetPassword(
+                                  _emailCtrl.text.trim(),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  'Reset Password',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Masukkan email Anda dan kami akan mengirimkan link untuk reset password.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey,
-                      ),
-                ),
-                const SizedBox(height: 32),
-                CustomTextField(
-                  label: 'Email',
-                  hint: 'Masukkan email terdaftar',
-                  controller: _emailCtrl,
-                  keyboardType: TextInputType.emailAddress,
-                  prefix: const Icon(Ionicons.mail_outline, size: 20),
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Email wajib diisi';
-                    if (!GetUtils.isEmail(v)) return 'Email tidak valid';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                Obx(() => CustomButton(
-                      label: 'Kirim Link Reset',
-                      isLoading: _authController.isLoading.value,
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _authController
-                              .resetPassword(_emailCtrl.text.trim());
-                        }
-                      },
-                    )),
-              ],
-            ),
-            ),
-            ),
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
-    ),
     );
   }
 }

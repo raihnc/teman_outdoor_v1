@@ -11,7 +11,7 @@ class AdminDashboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Panel')),
+      appBar: AppBar(title: const Text('Admin Panel'), surfaceTintColor: Colors.transparent,),
       body: Padding(
         padding: EdgeInsets.all(context.screen.pagePadding),
         child: Column(

@@ -33,7 +33,7 @@ class OrdersView extends StatelessWidget {
       init: Get.find<OrdersController>(),
       builder: (controller) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Pesanan Saya')),
+          appBar: AppBar(title: const Text('Pesanan Saya'), surfaceTintColor: Colors.transparent),
           body: Column(
             children: [
               _buildTabBar(context, controller),
