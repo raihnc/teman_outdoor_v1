@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:get/get.dart';
 import '../../../data/models/booking_model.dart';
 import '../../../data/repositories/booking_repository.dart';
@@ -15,10 +16,22 @@ class OrdersController extends GetxController {
   final historyBookings = <BookingModel>[].obs;
   final selectedTab = 0.obs;
 
+  StreamSubscription<List<BookingModel>>? _bookingsSub;
+
   @override
   void onInit() {
     super.onInit();
     loadBookings();
+    ever(Get.find<AuthController>().user, (_) {
+      _subscribe();
+      loadBookings();
+    });
+  }
+
+  @override
+  void onClose() {
+    _bookingsSub?.cancel();
+    super.onClose();
   }
 
   Future<void> loadBookings() async {
@@ -28,16 +41,7 @@ class OrdersController extends GetxController {
       if (!auth.isLoggedIn) return;
 
       final allBookings = await _bookingRepo.getUserBookings(auth.user.value!.uid);
-      activeBookings.value = allBookings
-          .where((b) =>
-              b.status != FirestoreConstants.statusCompleted &&
-              b.status != FirestoreConstants.statusCancelled)
-          .toList();
-      historyBookings.value = allBookings
-          .where((b) =>
-              b.status == FirestoreConstants.statusCompleted ||
-              b.status == FirestoreConstants.statusCancelled)
-          .toList();
+      _partition(allBookings);
     } catch (e) {
       showToast('Gagal memuat pesanan', type: ToastType.error);
     } finally {
@@ -45,18 +49,44 @@ class OrdersController extends GetxController {
     }
   }
 
+  /// Update real-time daftar pesanan (pengganti push notification v1.0):
+  /// status berubah otomatis saat admin/kondisi toko mengubah data.
+  void _subscribe() {
+    _bookingsSub?.cancel();
+    final auth = Get.find<AuthController>();
+    if (!auth.isLoggedIn) return;
+
+    _bookingsSub = _bookingRepo.userBookingsStream(auth.user.value!.uid)
+        .listen((list) {
+      _partition(list);
+    }, onError: (_) {});
+  }
+
+  void _partition(List<BookingModel> allBookings) {
+    isLoading.value = false;
+    activeBookings.value = allBookings
+        .where((b) =>
+            b.status != FirestoreConstants.statusCompleted &&
+            b.status != FirestoreConstants.statusCancelled)
+        .toList();
+    historyBookings.value = allBookings
+        .where((b) =>
+            b.status == FirestoreConstants.statusCompleted ||
+            b.status == FirestoreConstants.statusCancelled)
+        .toList();
+  }
+
   Future<void> cancelBooking(String bookingId) async {
     try {
       final auth = Get.find<AuthController>();
-      await _bookingRepo.updateBookingStatus(
+      await _bookingRepo.cancelBooking(
         bookingId,
-        FirestoreConstants.statusCancelled,
         auth.user.value!.uid,
       );
       await loadBookings();
       showToast('Pesanan dibatalkan', type: ToastType.success);
     } catch (e) {
-      showToast('Gagal membatalkan pesanan', type: ToastType.error);
+      showToast(e.toString(), type: ToastType.error);
     }
   }
 
@@ -78,15 +108,11 @@ class OrdersController extends GetxController {
   Future<void> markReturned(String bookingId) async {
     try {
       final auth = Get.find<AuthController>();
-      await _bookingRepo.updateBookingStatus(
-        bookingId,
-        FirestoreConstants.statusReturned,
-        auth.user.value!.uid,
-      );
+      await _bookingRepo.markReturned(bookingId, auth.user.value!.uid);
       await loadBookings();
       showToast('Alat berhasil dikembalikan', type: ToastType.success);
     } catch (e) {
-      showToast('Gagal mengembalikan alat', type: ToastType.error);
+      showToast(e.toString(), type: ToastType.error);
     }
   }
 

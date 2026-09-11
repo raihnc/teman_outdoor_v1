@@ -12,6 +12,7 @@ import '../../../features/auth/controllers/auth_controller.dart';
 import '../../../features/booking/views/booking_sheet.dart';
 import '../controllers/product_detail_controller.dart';
 import '../../../data/repositories/wishlist_repository.dart';
+import '../../../data/repositories/product_repository.dart';
 import '../../../data/repositories/review_repository.dart';
 
 class ProductDetailView extends StatelessWidget {
@@ -32,9 +33,10 @@ class ProductDetailView extends StatelessWidget {
     );
     return GetBuilder<ProductDetailController>(
       init: ProductDetailController(
-          Get.find<ReviewRepository>(),
-          Get.find<WishlistRepository>(),
-        ),
+        Get.find<ReviewRepository>(),
+        Get.find<WishlistRepository>(),
+        Get.find<ProductRepository>(),
+      ),
       builder: (controller) {
         return Scaffold(
           body: CustomScrollView(
@@ -76,19 +78,6 @@ class ProductDetailView extends StatelessWidget {
       surfaceTintColor: Colors.transparent,
       expandedHeight: screen.isSmallPhone ? 260 : 320,
       pinned: true,
-      actions: [
-        Obx(() => IconButton(
-              onPressed: controller.toggleWishlist,
-              icon: Icon(
-                controller.isWishlisted.value
-                    ? Ionicons.heart
-                    : Ionicons.heart_outline,
-                color: controller.isWishlisted.value
-                    ? AppColors.error
-                    : Colors.white,
-              ),
-            )),
-      ],
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           fit: StackFit.expand,
@@ -388,27 +377,56 @@ class ProductDetailView extends StatelessWidget {
         border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: SafeArea(
-        child: CustomButton(
-          label: controller.product.stock > 0 ? 'Sewa Sekarang' : 'Stok Habis',
-          icon: Ionicons.cart_outline,
-          onPressed: controller.product.stock > 0
-              ? () {
-                  final auth = Get.find<AuthController>();
-                  auth.requireAuth(() {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(20)),
-                      ),
-                      builder: (_) => BookingSheet(
-                        product: controller.product,
-                      ),
-                    );
-                  });
-                }
-              : null,
+        child: Row(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Obx(() => IconButton(
+                    onPressed: controller.toggleWishlist,
+                    icon: Icon(
+                      controller.isWishlisted.value
+                          ? Ionicons.heart
+                          : Ionicons.heart_outline,
+                      color: controller.isWishlisted.value
+                          ? AppColors.error
+                          : AppColors.textPrimary,
+                    ),
+                  )),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: CustomButton(
+                label:
+                    controller.product.stock > 0 ? 'Sewa Sekarang' : 'Stok Habis',
+                icon: Ionicons.cart_outline,
+                onPressed: controller.product.stock > 0
+                    ? () {
+                        final auth = Get.find<AuthController>();
+                        auth.requireAuth(() {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(20),
+                              ),
+                            ),
+                            builder: (_) => BookingSheet(
+                              product: controller.product,
+                            ),
+                          );
+                        });
+                      }
+                    : null,
+              ),
+            ),
+          ],
         ),
       ),
     );

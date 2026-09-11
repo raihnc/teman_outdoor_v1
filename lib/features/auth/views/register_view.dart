@@ -21,6 +21,8 @@ class _RegisterViewState extends State<RegisterView> {
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   final _confirmPassCtrl = TextEditingController();
+  bool _obscurePass = true;
+  bool _obscureConfirm = true;
   final _formKey = GlobalKey<FormState>();
   final _authController = Get.find<AuthController>();
 
@@ -126,10 +128,20 @@ class _RegisterViewState extends State<RegisterView> {
                           label: 'Password',
                           hint: 'Minimal 6 karakter',
                           controller: _passCtrl,
-                          obscureText: true,
+                          obscureText: _obscurePass,
                           prefix: const Icon(
                             Ionicons.lock_closed_outline,
                             size: 20,
+                          ),
+                          suffix: IconButton(
+                            onPressed: () =>
+                                setState(() => _obscurePass = !_obscurePass),
+                            icon: Icon(
+                              _obscurePass
+                                  ? Ionicons.eye_outline
+                                  : Ionicons.eye_off_outline,
+                              size: 20,
+                            ),
                           ),
                           validator: (v) {
                             if (v == null || v.isEmpty)
@@ -143,10 +155,21 @@ class _RegisterViewState extends State<RegisterView> {
                           label: 'Konfirmasi Password',
                           hint: 'Ulangi password',
                           controller: _confirmPassCtrl,
-                          obscureText: true,
+                          obscureText: _obscureConfirm,
                           prefix: const Icon(
                             Ionicons.lock_closed_outline,
                             size: 20,
+                          ),
+                          suffix: IconButton(
+                            onPressed: () => setState(
+                              () => _obscureConfirm = !_obscureConfirm,
+                            ),
+                            icon: Icon(
+                              _obscureConfirm
+                                  ? Ionicons.eye_outline
+                                  : Ionicons.eye_off_outline,
+                              size: 20,
+                            ),
                           ),
                           validator: (v) {
                             if (v != _passCtrl.text)

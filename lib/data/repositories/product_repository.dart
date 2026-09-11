@@ -41,6 +41,40 @@ class ProductRepository {
         .toList();
   }
 
+  // ── Real-time streams ──
+  Stream<List<ProductModel>> activeProductsStream({
+    String? category,
+    String orderBy = 'createdAt',
+    bool descending = true,
+    int limit = 20,
+  }) =>
+      _firestoreService.activeProductsStream(
+        category: category,
+        orderBy: orderBy,
+        descending: descending,
+        limit: limit,
+      ).map((snap) => snap.docs
+          .map((doc) => ProductModel.fromFirestore(doc))
+          .where((p) => p.isActive)
+          .toList());
+
+  Stream<List<ProductModel>> popularProductsStream({int limit = 6}) =>
+      _firestoreService.popularProductsStream(limit: limit)
+          .map((snap) => snap.docs
+              .map((doc) => ProductModel.fromFirestore(doc))
+              .toList());
+
+  Stream<List<ProductModel>> newProductsStream({int limit = 6}) =>
+      _firestoreService.newProductsStream(limit: limit)
+          .map((snap) => snap.docs
+              .map((doc) => ProductModel.fromFirestore(doc))
+              .toList());
+
+  Stream<ProductModel?> productStream(String id) =>
+      _firestoreService.productStream(id)
+          .map((doc) =>
+              doc.exists ? ProductModel.fromFirestore(doc) : null);
+
   Future<ProductModel?> getProduct(String id) async {
     final doc = await _firestoreService.getProduct(id);
     if (!doc.exists) return null;

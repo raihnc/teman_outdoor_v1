@@ -28,60 +28,76 @@ class BookingSheet extends StatelessWidget {
     return GetBuilder<BookingController>(
       init: Get.find<BookingController>(),
       builder: (controller) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            24,
-            24,
-            24,
-            MediaQuery.of(context).viewInsets.bottom + 24,
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 24,
+                offset: const Offset(0, -4),
+              ),
+            ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.border,
-                    borderRadius: BorderRadius.circular(2),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              24,
+              24,
+              24,
+              MediaQuery.of(context).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade500,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Pesan ${product.name}',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
+                Text(
+                  'Pesan ${product.name}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 20),
 
-              // Pickup Date
-              Text(
-                'Tanggal Pengambilan',
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: () async {
-                  final now = DateTime.now();
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: controller.selectedDate.value ??
-                        now.add(const Duration(days: 1)),
-                    firstDate: now.add(const Duration(days: 1)),
-                    lastDate: now.add(const Duration(days: 30)),
-                    locale: const Locale('id', 'ID'),
-                  );
-                  if (picked != null) {
-                    controller.selectedDate.value = picked;
-                    controller.update();
-                  }
-                },
-                child: Obx(() => Container(
+                // Pickup Date
+                Text(
+                  'Tanggal Pengambilan',
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () async {
+                    final now = DateTime.now();
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate:
+                          controller.selectedDate.value ??
+                          now.add(const Duration(days: 1)),
+                      firstDate: now.add(const Duration(days: 1)),
+                      lastDate: now.add(const Duration(days: 30)),
+                      locale: const Locale('id', 'ID'),
+                    );
+                    if (picked != null) {
+                      controller.selectedDate.value = picked;
+                      controller.update();
+                    }
+                  },
+                  child: Obx(
+                    () => Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 14),
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(12),
@@ -89,8 +105,11 @@ class BookingSheet extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Ionicons.calendar_outline,
-                              color: AppColors.primary, size: 20),
+                          const Icon(
+                            Ionicons.calendar_outline,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
                           const SizedBox(width: 12),
                           Text(
                             controller.selectedDate.value != null
@@ -104,17 +123,19 @@ class BookingSheet extends StatelessWidget {
                           ),
                         ],
                       ),
-                    )),
-              ),
-              const SizedBox(height: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
 
-              // Duration
-              Text(
-                'Durasi Sewa',
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-              const SizedBox(height: 8),
-              Obx(() => Wrap(
+                // Duration
+                Text(
+                  'Durasi Sewa',
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                const SizedBox(height: 8),
+                Obx(
+                  () => Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: [1, 2, 3, 5, 7].map((days) {
@@ -123,7 +144,9 @@ class BookingSheet extends StatelessWidget {
                         onTap: () => controller.setDuration(days),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? AppColors.primary
@@ -138,29 +161,35 @@ class BookingSheet extends StatelessWidget {
                           child: Text(
                             '$days hari',
                             style: TextStyle(
-                              color:
-                                  isSelected ? Colors.white : AppColors.textPrimary,
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppColors.textPrimary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       );
                     }).toList(),
-                  )),
-              const SizedBox(height: 16),
+                  ),
+                ),
+                const SizedBox(height: 16),
 
-              // Quantity
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Jumlah',
-                      style: Theme.of(context).textTheme.labelLarge),
-                  Obx(() => Row(
+                // Quantity
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Jumlah',
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                    Obx(
+                      () => Row(
                         children: [
                           IconButton(
                             onPressed: controller.quantity.value > 1
                                 ? () => controller.setQuantity(
-                                    controller.quantity.value - 1)
+                                    controller.quantity.value - 1,
+                                  )
                                 : null,
                             icon: const Icon(Ionicons.remove_circle_outline),
                           ),
@@ -174,29 +203,32 @@ class BookingSheet extends StatelessWidget {
                           IconButton(
                             onPressed: controller.quantity.value < product.stock
                                 ? () => controller.setQuantity(
-                                    controller.quantity.value + 1)
+                                    controller.quantity.value + 1,
+                                  )
                                 : null,
                             icon: const Icon(Ionicons.add_circle_outline),
                           ),
                         ],
-                      )),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Note
-              TextField(
-                maxLines: 2,
-                maxLength: 200,
-                onChanged: controller.setNote,
-                decoration: const InputDecoration(
-                  hintText: 'Catatan tambahan (opsional)',
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // Summary
-              Obx(() => Container(
+                // Note
+                TextField(
+                  maxLines: 2,
+                  maxLength: 200,
+                  onChanged: controller.setNote,
+                  decoration: const InputDecoration(
+                    hintText: 'Catatan tambahan (opsional)',
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Summary
+                Obx(
+                  () => Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.05),
@@ -208,21 +240,20 @@ class BookingSheet extends StatelessWidget {
                         const Text('Total'),
                         Text(
                           CurrencyFormatter.format(
-                              controller.totalPrice(product)),
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(
-                                color: AppColors.primary,
-                              ),
+                            controller.totalPrice(product),
+                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(color: AppColors.primary),
                         ),
                       ],
                     ),
-                  )),
-              const SizedBox(height: 20),
+                  ),
+                ),
+                const SizedBox(height: 20),
 
-              // Submit
-              Obx(() => SizedBox(
+                // Submit
+                Obx(
+                  () => SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: controller.isLoading.value
@@ -239,8 +270,10 @@ class BookingSheet extends StatelessWidget {
                             )
                           : const Text('Konfirmasi Booking'),
                     ),
-                  )),
-            ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

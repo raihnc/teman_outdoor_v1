@@ -9,7 +9,6 @@ import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/widgets/status_badge.dart';
 import '../../../core/widgets/empty_state.dart';
-import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/routes/app_routes.dart';
 import '../controllers/orders_controller.dart';
 
@@ -166,10 +165,16 @@ class OrdersView extends StatelessWidget {
                 width: 72,
                 height: 72,
                 fit: BoxFit.cover,
-                placeholder: (_, __) => const ShimmerLoading(
+                placeholder: (_, __) => const SizedBox(
                   width: 72,
                   height: 72,
-                  borderRadius: 12,
+                  child: Center(
+                    child: SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
                 ),
                 errorWidget: (_, __, ___) => Container(
                   width: 72,
@@ -218,20 +223,6 @@ class OrdersView extends StatelessWidget {
   }
 
   Widget _buildLoadingList(BuildContext context) {
-    return ListView.separated(
-      padding: EdgeInsets.fromLTRB(
-        context.screen.pagePadding,
-        12,
-        context.screen.pagePadding,
-        100,
-      ),
-      itemCount: 4,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (_, __) => const ShimmerLoading(
-        width: double.infinity,
-        height: 96,
-        borderRadius: 16,
-      ),
-    );
+    return const Center(child: CircularProgressIndicator());
   }
 }

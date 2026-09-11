@@ -19,6 +19,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
+  bool _obscurePass = true;
   final _formKey = GlobalKey<FormState>();
   final _authController = Get.find<AuthController>();
 
@@ -47,124 +48,128 @@ class _LoginViewState extends State<LoginView> {
         child: ResponsiveBuilder(
           builder: (context, screen) {
             return SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: screen.pagePadding + (screen.isLargePhone ? 8 : 0),
-          ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
-              child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 60),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Ionicons.leaf,
-                    color: AppColors.primary,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Selamat Datang! 👋',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Masuk ke akun Anda untuk mulai menyewa alat camping.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 40),
-                CustomTextField(
-                  label: 'Email',
-                  hint: 'Masukkan email Anda',
-                  controller: _emailCtrl,
-                  keyboardType: TextInputType.emailAddress,
-                  prefix: const Icon(Ionicons.mail_outline, size: 20),
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Email wajib diisi';
-                    if (!GetUtils.isEmail(v)) return 'Email tidak valid';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  label: 'Password',
-                  hint: 'Masukkan password',
-                  controller: _passCtrl,
-                  obscureText: true,
-                  prefix: const Icon(Ionicons.lock_closed_outline, size: 20),
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Password wajib diisi';
-                    if (v.length < 6) return 'Minimal 6 karakter';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () => Get.toNamed(AppRoutes.forgotPassword),
-                    child: const Text(
-                      'Lupa Password?',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Obx(
-                  () => CustomButton(
-                    label: 'Masuk',
-                    isLoading: _authController.isLoading.value,
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _authController.signInWithEmail(
-                          _emailCtrl.text.trim(),
-                          _passCtrl.text,
-                        );
-                      }
-                    },
-                  ),
-                ),
-                const SizedBox(height: 15),
-                Center(
-                  child: TextButton(
-                    onPressed: () => Get.toNamed(AppRoutes.register),
-                    child: RichText(
-                      text: TextSpan(
-                        text: 'Belum punya akun? ',
-                        style: Theme.of(context).textTheme.bodySmall,
-                        children: const [
-                          TextSpan(
-                            text: 'Daftar',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
+              padding: EdgeInsets.symmetric(
+                horizontal: screen.pagePadding + (screen.isLargePhone ? 8 : 0),
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 60),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(
+                            Ionicons.leaf,
+                            color: AppColors.primary,
+                            size: 32,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Selamat Datang! 👋',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Masuk ke akun Anda untuk mulai menyewa alat camping.',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.textSecondary),
+                        ),
+                        const SizedBox(height: 40),
+                        CustomTextField(
+                          label: 'Email',
+                          hint: 'Masukkan email Anda',
+                          controller: _emailCtrl,
+                          keyboardType: TextInputType.emailAddress,
+                          prefix: const Icon(Ionicons.mail_outline, size: 20),
+                          validator: (v) {
+                            if (v == null || v.isEmpty)
+                              return 'Email wajib diisi';
+                            if (!GetUtils.isEmail(v))
+                              return 'Email tidak valid';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          label: 'Password',
+                          hint: 'Masukkan password',
+                          controller: _passCtrl,
+                          obscureText: _obscurePass,
+                          prefix: const Icon(
+                            Ionicons.lock_closed_outline,
+                            size: 20,
+                          ),
+                          suffix: IconButton(
+                            onPressed: () =>
+                                setState(() => _obscurePass = !_obscurePass),
+                            icon: Icon(
+                              _obscurePass
+                                  ? Ionicons.eye_outline
+                                  : Ionicons.eye_off_outline,
+                              size: 20,
                             ),
                           ),
-                        ],
-                      ),
+                          validator: (v) {
+                            if (v == null || v.isEmpty)
+                              return 'Password wajib diisi';
+                            if (v.length < 6) return 'Minimal 6 karakter';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 25),
+                        Obx(
+                          () => CustomButton(
+                            label: 'Masuk',
+                            isLoading: _authController.isLoading.value,
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _authController.signInWithEmail(
+                                  _emailCtrl.text.trim(),
+                                  _passCtrl.text,
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        Center(
+                          child: TextButton(
+                            onPressed: () => Get.toNamed(AppRoutes.register),
+                            child: RichText(
+                              text: TextSpan(
+                                text: 'Belum punya akun? ',
+                                style: Theme.of(context).textTheme.bodySmall,
+                                children: const [
+                                  TextSpan(
+                                    text: 'Daftar',
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
-            ),
-            ),
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
-    ),
     );
   }
 }

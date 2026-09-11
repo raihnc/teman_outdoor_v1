@@ -61,7 +61,7 @@ class BookingController extends GetxController {
         createdAt: DateTime.now(),
       );
 
-      await _bookingRepo.createBooking(booking);
+      await _bookingRepo.createBookingWithStock(booking);
 
       Get.back();
       showToast('Booking berhasil dibuat!', type: ToastType.success);

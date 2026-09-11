@@ -3,6 +3,7 @@
 > **Versi**: 1.0 · **Tanggal**: 2026-09-10 · **Status**: Draft
 > **Platform**: Flutter (Android + iOS) · **Backend**: Firebase · **Status Management**: GetX
 
+
 ---
 
 ## 1. Ringkasan Eksekutif
@@ -583,7 +584,7 @@ Penyewa                         Firestore                     Admin
 
 | Versi | Cakupan | Target |
 |-------|---------|--------|
-| **v1.0 (MVP)** | Auth (email + Google), Home, Katalog, Detail, Booking, Orders, Wishlist, Ulasan, Profil, Admin CRUD | Bulan 1–2 |
+| **v1.0 (MVP)** | Auth (email), Home, Katalog, Detail, Booking, Orders, Wishlist, Ulasan, Profil, Admin CRUD | Bulan 1–2 |
 | **v1.1** | Peta lokasi toko, Push notification reminder, Promo/coupon, Rating dashboard admin | Bulan 3 |
 | **v2.0** | Multi-vendor, Payment gateway, Delivery/antar-jemput, Chat in-app | Bulan 4–6 |
 

@@ -1,13 +1,15 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../data/models/product_model.dart';
-import '../../../data/repositories/product_repository.dart';
+import '../../../data/services/firestore_service.dart';
 import '../../../core/utils/toast.dart';
 
 class CatalogController extends GetxController {
-  final ProductRepository _productRepo;
+  final FirestoreService _firestoreService;
 
-  CatalogController(this._productRepo);
+  CatalogController(this._firestoreService);
 
   final isLoading = true.obs;
   final products = <ProductModel>[].obs;
@@ -15,6 +17,8 @@ class CatalogController extends GetxController {
   final searchQuery = ''.obs;
   final sortBy = 'newest'.obs;
   final hasMore = true.obs;
+
+  StreamSubscription<QuerySnapshot>? _productsSub;
   DocumentSnapshot? _lastDoc;
 
   List<ProductModel> get filteredProducts {
@@ -42,6 +46,14 @@ class CatalogController extends GetxController {
     return result;
   }
 
+  String get _orderByField => switch (sortBy.value) {
+        'price_low' || 'price_high' => 'pricePerDay',
+        'popular' => 'totalBooked',
+        _ => 'createdAt',
+      };
+
+  bool get _descending => sortBy.value != 'price_low';
+
   @override
   void onInit() {
     super.onInit();
@@ -49,50 +61,79 @@ class CatalogController extends GetxController {
     if (initialCategory != null) {
       selectedCategory.value = initialCategory;
     }
-    loadProducts();
+    _subscribe();
   }
 
-  Future<void> loadProducts() async {
+  @override
+  void onClose() {
+    _productsSub?.cancel();
+    super.onClose();
+  }
+
+  /// Halaman 1 (limit 20) real-time; perubahan data langsung tampil.
+  void _subscribe() {
+    _productsSub?.cancel();
     isLoading.value = true;
     _lastDoc = null;
-    try {
-      final orderBy = sortBy.value == 'price_low' || sortBy.value == 'price_high'
-          ? 'pricePerDay'
-          : sortBy.value == 'popular'
-              ? 'totalBooked'
-              : 'createdAt';
 
-      final result = await _productRepo.getProducts(
-        category: selectedCategory.value.isEmpty ? null : selectedCategory.value,
-        orderBy: orderBy,
-        descending: sortBy.value != 'price_low',
+    _productsSub = _firestoreService
+        .activeProductsStream(
+          category: selectedCategory.value.isEmpty
+              ? null
+              : selectedCategory.value,
+          orderBy: _orderByField,
+          descending: _descending,
+          limit: AppConstants.defaultPageSize,
+        )
+        .listen((snap) {
+      products.value = snap.docs
+          .map((doc) => ProductModel.fromFirestore(doc))
+          .where((p) => p.isActive)
+          .toList();
+      hasMore.value = snap.docs.length >= AppConstants.defaultPageSize;
+      _lastDoc = snap.docs.isNotEmpty ? snap.docs.last : null;
+      isLoading.value = false;
+      update();
+    }, onError: (_) {
+      showToast('Gagal memuat produk', type: ToastType.error);
+      isLoading.value = false;
+      update();
+    });
+  }
+
+  /// Muat halaman berikutnya (one-shot get, sesuai PRD pagination).
+  Future<void> loadMore() async {
+    if (!hasMore.value || isLoading.value || _lastDoc == null) return;
+    isLoading.value = true;
+    try {
+      final snap = await _firestoreService.getProducts(
+        category: selectedCategory.value.isEmpty
+            ? null
+            : selectedCategory.value,
+        orderBy: _orderByField,
+        descending: _descending,
+        limit: AppConstants.defaultPageSize,
+        lastDoc: _lastDoc,
       );
-      products.value = result;
-      hasMore.value = result.length >= 20;
-    } catch (e) {
+      final list = snap.docs
+          .map((doc) => ProductModel.fromFirestore(doc))
+          .toList();
+      if (list.isNotEmpty) {
+        products.addAll(list);
+        hasMore.value = list.length >= AppConstants.defaultPageSize;
+        _lastDoc = snap.docs.isNotEmpty ? snap.docs.last : null;
+        update();
+      }
+    } catch (_) {
       showToast('Gagal memuat produk', type: ToastType.error);
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> loadMore() async {
-    if (!hasMore.value || isLoading.value) return;
-    try {
-      final result = await _productRepo.getProducts(
-        category: selectedCategory.value.isEmpty ? null : selectedCategory.value,
-        lastDoc: _lastDoc,
-      );
-      if (result.isNotEmpty) {
-        products.addAll(result);
-        hasMore.value = result.length >= 20;
-      }
-    } catch (_) {}
-  }
-
   void setCategory(String category) {
     selectedCategory.value = category;
-    loadProducts();
+    _subscribe();
   }
 
   void setSearchQuery(String query) {
@@ -101,8 +142,10 @@ class CatalogController extends GetxController {
 
   void setSortBy(String value) {
     sortBy.value = value;
-    loadProducts();
+    _subscribe();
   }
 
-  Future<void> refreshProducts() => loadProducts();
+  Future<void> refreshProducts() async {
+    _subscribe();
+  }
 }

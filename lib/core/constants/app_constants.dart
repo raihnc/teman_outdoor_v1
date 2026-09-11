@@ -7,7 +7,6 @@ class AppConstants {
   static const appVersion = '1.0.0';
 
   static const defaultPageSize = 20;
-  static const maxBannerCount = 5;
   static const maxReviewPhotos = 3;
   static const maxNoteLength = 200;
   static const maxReviewLength = 500;
@@ -18,6 +17,9 @@ class AppConstants {
       dotenv.env['CLOUDINARY_CLOUD_NAME'] ?? 'sstlrolu';
   static String get cloudinaryUploadPreset =>
       dotenv.env['CLOUDINARY_UPLOAD_PRESET'] ?? 'teman_outdoor';
+
+  static String get onesignalAppId =>
+      dotenv.env['ONESIGNAL_APP_ID'] ?? 'cde7dd4d-a2d8-4c25-b622-0685c1ddae65';
 
   static const storeName = 'Teman Outdoor Makassar';
   static const storeAddress =

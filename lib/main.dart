@@ -7,6 +7,7 @@ import 'core/routes/app_pages.dart';
 import 'core/routes/app_routes.dart';
 import 'core/routes/initial_binding.dart';
 import 'core/theme/app_theme.dart';
+import 'data/services/onesignal_service.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -17,6 +18,7 @@ Future<void> main() async {
     // .env tidak ada (mis. rilis tanpa file) — pakai nilai default di AppConstants.
   }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await OneSignalService.initialize();
   runApp(const TemanOutdoorApp());
 }
 

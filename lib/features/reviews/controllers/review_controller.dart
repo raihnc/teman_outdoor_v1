@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../data/models/review_model.dart';
 import '../../../data/repositories/review_repository.dart';
-import '../../../data/repositories/booking_repository.dart';
 import '../../../data/services/cloudinary_service.dart';
 import '../../../features/auth/controllers/auth_controller.dart';
 import '../../../data/models/booking_model.dart';
@@ -11,10 +10,9 @@ import '../../../core/utils/toast.dart';
 
 class ReviewController extends GetxController {
   final ReviewRepository _reviewRepo;
-  final BookingRepository _bookingRepo;
   final CloudinaryService _cloudinaryService;
 
-  ReviewController(this._reviewRepo, this._bookingRepo, this._cloudinaryService);
+  ReviewController(this._reviewRepo, this._cloudinaryService);
 
   final isLoading = false.obs;
   final rating = 0.obs;
@@ -76,8 +74,7 @@ class ReviewController extends GetxController {
         createdAt: DateTime.now(),
       );
 
-      await _reviewRepo.createReview(review);
-      await _bookingRepo.markReviewed(booking.id);
+      await _reviewRepo.createReviewAndUpdateProduct(review);
 
       Get.back();
       showToast('Ulasan berhasil dikirim!', type: ToastType.success);

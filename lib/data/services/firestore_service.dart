@@ -8,8 +8,73 @@ class FirestoreService {
   CollectionReference get _products => _db.collection(FirestoreConstants.productsCollection);
   CollectionReference get _bookings => _db.collection(FirestoreConstants.bookingsCollection);
   CollectionReference get _reviews => _db.collection(FirestoreConstants.reviewsCollection);
-  CollectionReference get _banners => _db.collection(FirestoreConstants.bannersCollection);
   CollectionReference get _categories => _db.collection(FirestoreConstants.categoriesCollection);
+
+  CollectionReference get bookingsRef => _bookings;
+  CollectionReference get reviewsRef => _reviews;
+  DocumentReference bookingRef(String id) => _bookings.doc(id);
+  DocumentReference productRef(String id) => _products.doc(id);
+  DocumentReference userRef(String uid) => _users.doc(uid);
+
+  // Transaksi untuk operasi yang mengubah beberapa dokumen sekaligus
+  // (booking + stok produk, review + rating produk).
+  Future<T> runTransaction<T>(Future<T> Function(Transaction) action) =>
+      _db.runTransaction(action);
+
+  // Streams untuk real-time update (pengganti push notification di v1.0)
+  Stream<QuerySnapshot> getUserBookingsStream(String userId) =>
+      _bookings.where('userId', isEqualTo: userId)
+          .orderBy('createdAt', descending: true)
+          .snapshots();
+
+  Stream<QuerySnapshot> allBookingsStream() =>
+      _bookings.orderBy('createdAt', descending: true).snapshots();
+
+  // ── Streams produk ──
+  Stream<QuerySnapshot> activeProductsStream({
+    String? category,
+    String? orderBy,
+    bool descending = false,
+    int limit = 20,
+  }) {
+    Query query = _products.where('isActive', isEqualTo: true);
+    if (category != null && category.isNotEmpty) {
+      query = query.where('category', isEqualTo: category);
+    }
+    return query.orderBy(orderBy ?? 'createdAt', descending: descending)
+        .limit(limit)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> popularProductsStream({int limit = 6}) =>
+      activeProductsStream(orderBy: 'totalBooked', descending: true, limit: limit);
+
+  Stream<QuerySnapshot> newProductsStream({int limit = 6}) =>
+      activeProductsStream(orderBy: 'createdAt', descending: true, limit: limit);
+
+  Stream<DocumentSnapshot> productStream(String id) =>
+      _products.doc(id).snapshots();
+
+  // ── Streams ulasan ──
+  Stream<QuerySnapshot> productReviewsStream(String productId) =>
+      _reviews.where('productId', isEqualTo: productId)
+          .orderBy('createdAt', descending: true)
+          .snapshots();
+
+  Stream<QuerySnapshot> allReviewsStream() =>
+      _reviews.orderBy('createdAt', descending: true).snapshots();
+
+  // ── Streams kategori ──
+  Stream<QuerySnapshot> activeCategoriesStream() =>
+      _categories.where('isActive', isEqualTo: true)
+          .orderBy('sortOrder')
+          .snapshots();
+
+  // ── Stream wishlist ──
+  Stream<DocumentSnapshot> wishlistStream(String uid) =>
+      _users.doc(uid).collection(FirestoreConstants.wishlistSubcollection)
+          .doc('list')
+          .snapshots();
 
   // Users
   Future<DocumentSnapshot> getUser(String uid) => _users.doc(uid).get();
@@ -97,21 +162,6 @@ class FirestoreService {
           .get();
 
   Future<void> deleteReview(String id) => _reviews.doc(id).delete();
-
-  // Banners
-  Future<QuerySnapshot> getActiveBanners() =>
-      _banners.where('isActive', isEqualTo: true)
-          .orderBy('sortOrder')
-          .limit(5)
-          .get();
-
-  Future<void> createBanner(Map<String, dynamic> data) =>
-      _banners.add(data);
-
-  Future<void> updateBanner(String id, Map<String, dynamic> data) =>
-      _banners.doc(id).update(data);
-
-  Future<void> deleteBanner(String id) => _banners.doc(id).delete();
 
   // Categories
   Future<QuerySnapshot> getActiveCategories() =>

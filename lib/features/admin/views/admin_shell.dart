@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ionicons/ionicons.dart';
-import '../controllers/navigation_controller.dart';
-import '../../features/home/views/home_view.dart';
-import '../../features/catalog/views/catalog_view.dart';
-import '../../features/orders/views/orders_view.dart';
-import '../../features/profile/views/profile_view.dart';
-import 'nav_bar.dart';
+import '../../../core/widgets/nav_bar.dart';
+import '../controllers/admin_navigation_controller.dart';
+import 'admin_dashboard_view.dart';
+import 'admin_product_list_view.dart';
+import 'admin_order_list_view.dart';
+import 'admin_review_list_view.dart';
 
-class MainShell extends StatelessWidget {
-  const MainShell({super.key});
+class AdminShell extends StatelessWidget {
+  const AdminShell({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final navController = Get.put(NavigationController(), permanent: true);
+    final navController = Get.find<AdminNavigationController>();
 
     final pages = const [
-      HomeView(),
-      CatalogView(),
-      OrdersView(),
-      ProfileView(),
+      AdminDashboardView(),
+      AdminProductListView(),
+      AdminOrderListView(),
+      AdminReviewListView(),
     ];
 
     return Obx(() {
@@ -34,14 +34,14 @@ class MainShell extends StatelessWidget {
           onTap: navController.changeTab,
           items: const [
             NavBarItem(
-              icon: Ionicons.home_outline,
-              activeIcon: Ionicons.home,
-              label: 'Home',
+              icon: Ionicons.stats_chart_outline,
+              activeIcon: Ionicons.stats_chart,
+              label: 'Dashboard',
             ),
             NavBarItem(
-              icon: Ionicons.grid_outline,
-              activeIcon: Ionicons.grid,
-              label: 'Katalog',
+              icon: Ionicons.cube_outline,
+              activeIcon: Ionicons.cube,
+              label: 'Produk',
             ),
             NavBarItem(
               icon: Ionicons.receipt_outline,
@@ -49,9 +49,9 @@ class MainShell extends StatelessWidget {
               label: 'Pesanan',
             ),
             NavBarItem(
-              icon: Ionicons.person_outline,
-              activeIcon: Ionicons.person,
-              label: 'Profil',
+              icon: Ionicons.star_outline,
+              activeIcon: Ionicons.star,
+              label: 'Ulasan',
             ),
           ],
         ),

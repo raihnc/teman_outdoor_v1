@@ -42,11 +42,42 @@ lib/
 - US-09 Wishlist (toggle hati, halaman wishlist)
 - US-10 Admin: dashboard statistik, kelola status order, CRUD inventaris, kelola ulasan
 
-## Catatan Integrasi
+## Backend (Firebase + Cloudinary + OneSignal)
 
-- Firebase: Auth + Firestore langsung dari repository (collection:
-  `users`, `tools`, `bookings`, `reviews`, `wishlists`).
-- QRIS statis: ganti placeholder ikon QR di `payment_view.dart` dengan URL
-  gambar QR dari Cloudinary.
-- Foto alat untuk now via URL; integrasi upload Cloudinary menyusul.
-- OneSignal/Cloudinary/loading_indicator sudah ada di pubspec (aktivasi backend menyusul).
+Tanpa Cloud Functions — semua logika memakai Firestore rules + transaction
+client (stok, `totalBooked`, agregasi rating), dan notifikasi real-time v1.0
+menggunakan Firestore streams (fallback resmi PRD §5.2).
+
+### Setup sekali saja
+
+1. **Firebase**: aktifkan Authentication (Email/Password) + Cloud Firestore.
+   Pastikan `android/app/google-services.json` & `lib/firebase_options.dart`
+   cocok dengan project (`firebase init`).
+2. **Cloudinary**: buat unsigned upload preset `teman_outdoor` (folder
+   `teman_outdoor/`, JPG/WebP, max 5MB). Isi `CLOUDINARY_CLOUD_NAME` &
+   `CLOUDINARY_UPLOAD_PRESET` di `.env` (lihat `.env.example`).
+3. **OneSignal** (opsional untuk push ke device): daftarkan app, isi
+   `ONESIGNAL_APP_ID` di `.env`. Jika kosong, OneSignal nonaktif dan app
+   tetap berjalan normal. `external user id` = Firebase UID, tag `role`
+   (`renter`/`admin`) disinkronkan otomatis saat login/logout.
+4. **Admin account**: buat manual di Firebase Console → Authentication →
+   tambah user → Firestore `users/{uid}` dengan `role: 'admin'`.
+
+### Deploy rules & indexes
+
+```bash
+firebase login
+firebase deploy --only firestore:rules
+firebase deploy --only firestore:indexes
+```
+
+### Integritas data (transaction client)
+
+- Booking: transaction menulis booking `pending` + stok berkurang +
+  `totalBooked` naik; stok dikembalikan saat cancel/returned.
+- Ulasan: transaction menulis review + update `averageRating`/`totalReviews`
+  produk + `booking.reviewed = true`.
+- Real-time: daftar order renter & admin otomatis sinkron via stream;
+  admin mendapat toast "Booking baru" untuk order `pending` baru.
+- Security rules membatasi renter: update produk hanya pada agregat
+  (stok/rating/popularitas), transisi booking hanya sesuai alur PRD.

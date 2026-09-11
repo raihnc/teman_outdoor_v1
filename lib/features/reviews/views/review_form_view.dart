@@ -8,7 +8,6 @@ import '../../../core/widgets/star_rating.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../controllers/review_controller.dart';
 import '../../../data/services/cloudinary_service.dart';
-import '../../../data/repositories/booking_repository.dart';
 import '../../../data/repositories/review_repository.dart';
 
 class ReviewFormView extends StatelessWidget {
@@ -29,13 +28,15 @@ class ReviewFormView extends StatelessWidget {
     );
     return GetBuilder<ReviewController>(
       init: ReviewController(
-          Get.find<ReviewRepository>(),
-          Get.find<BookingRepository>(),
-          Get.find<CloudinaryService>(),
-        ),
+        Get.find<ReviewRepository>(),
+        Get.find<CloudinaryService>(),
+      ),
       builder: (controller) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Beri Ulasan'), surfaceTintColor: Colors.transparent),
+          appBar: AppBar(
+            title: const Text('Beri Ulasan'),
+            surfaceTintColor: Colors.transparent,
+          ),
           body: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
               context.screen.pagePadding,
@@ -48,26 +49,25 @@ class ReviewFormView extends StatelessWidget {
               children: [
                 Text(
                   'Bagaimana pengalaman Anda?',
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 24),
 
                 // Rating
                 Center(
-                  child: Obx(() => StarRating(
-                        rating: controller.rating.value.toDouble(),
-                        size: 40,
-                        interactive: true,
-                        onRatingChanged: controller.setRating,
-                      )),
+                  child: Obx(
+                    () => StarRating(
+                      rating: controller.rating.value.toDouble(),
+                      size: 40,
+                      interactive: true,
+                      onRatingChanged: controller.setRating,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 32),
 
                 // Comment
-                Text(
-                  'Komentar',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
+                Text('Komentar', style: Theme.of(context).textTheme.labelLarge),
                 const SizedBox(height: 8),
                 TextField(
                   maxLines: 4,
@@ -85,73 +85,79 @@ class ReviewFormView extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
                 const SizedBox(height: 8),
-                Obx(() => Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        ...List.generate(controller.photos.length, (i) {
-                          return Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.file(
-                                  controller.photos[i],
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
-                                ),
+                Obx(
+                  () => Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ...List.generate(controller.photos.length, (i) {
+                        return Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.file(
+                                controller.photos[i],
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
                               ),
-                              Positioned(
-                                top: 4,
-                                right: 4,
-                                child: GestureDetector(
-                                  onTap: () => controller.removePhoto(i),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.black54,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Ionicons.close,
-                                      size: 14,
-                                      color: Colors.white,
-                                    ),
+                            ),
+                            Positioned(
+                              top: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () => controller.removePhoto(i),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black54,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Ionicons.close,
+                                    size: 14,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
-                            ],
-                          );
-                        }),
-                        if (controller.photos.length < 3)
-                          GestureDetector(
-                            onTap: controller.pickPhotos,
-                            child: Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                color: AppColors.surface,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                    color: AppColors.border, width: 2),
-                              ),
-                              child: const Icon(
-                                Ionicons.camera_outline,
-                                color: AppColors.textHint,
-                                size: 28,
+                            ),
+                          ],
+                        );
+                      }),
+                      if (controller.photos.length < 3)
+                        GestureDetector(
+                          onTap: controller.pickPhotos,
+                          child: Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppColors.border,
+                                width: 2,
                               ),
                             ),
+                            child: const Icon(
+                              Ionicons.camera_outline,
+                              color: AppColors.textHint,
+                              size: 28,
+                            ),
                           ),
-                      ],
-                    )),
+                        ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 32),
 
                 // Submit
-                Obx(() => CustomButton(
-                      label: 'Kirim Ulasan',
-                      isLoading: controller.isLoading.value,
-                      onPressed: controller.submitReview,
-                    )),
+                Obx(
+                  () => CustomButton(
+                    label: 'Kirim Ulasan',
+                    isLoading: controller.isLoading.value,
+                    onPressed: controller.submitReview,
+                  ),
+                ),
               ],
             ),
           ),

@@ -5,10 +5,9 @@ import 'package:ionicons/ionicons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../core/widgets/product_card.dart';
-import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../controllers/catalog_controller.dart';
-import '../../../data/repositories/product_repository.dart';
+import '../../../data/services/firestore_service.dart';
 
 class CatalogView extends StatelessWidget {
   const CatalogView({super.key});
@@ -27,7 +26,7 @@ class CatalogView extends StatelessWidget {
       ),
     );
     return GetBuilder<CatalogController>(
-      init: CatalogController(Get.find<ProductRepository>()),
+      init: CatalogController(Get.find<FirestoreService>()),
       builder: (controller) {
         final screen = context.screen;
         return Scaffold(
@@ -162,22 +161,6 @@ class CatalogView extends StatelessWidget {
   }
 
   Widget _buildLoadingGrid(BuildContext context) {
-    final screen = context.screen;
-    return GridView.builder(
-      padding: EdgeInsets.fromLTRB(
-        screen.pagePadding,
-        12,
-        screen.pagePadding,
-        100,
-      ),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: screen.gridColumns,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: screen.gridAspectRatio,
-      ),
-      itemCount: 6,
-      itemBuilder: (_, __) => ProductCardShimmer(),
-    );
+    return const Center(child: CircularProgressIndicator());
   }
 }

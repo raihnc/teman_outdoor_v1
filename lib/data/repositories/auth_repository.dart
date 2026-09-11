@@ -50,10 +50,6 @@ class AuthRepository {
     return UserModel.fromFirestore(doc);
   }
 
-  Future<void> resetPassword(String email) async {
-    await _authService.resetPassword(email);
-  }
-
   Future<void> signOut() async {
     await _authService.signOut();
   }

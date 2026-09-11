@@ -8,6 +8,7 @@ import '../../../core/utils/responsive.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../../../core/widgets/confirm_bottom_sheet.dart';
 import '../../../core/constants/firestore_constants.dart';
 import '../controllers/orders_controller.dart';
 
@@ -151,16 +152,13 @@ class OrderDetailView extends StatelessWidget {
                     label: 'Batalkan Pesanan',
                     color: AppColors.error,
                     onPressed: () {
-                      Get.defaultDialog(
+                      showConfirmBottomSheet(
                         title: 'Batalkan Pesanan?',
-                        middleText: 'Anda yakin ingin membatalkan pesanan ini?',
-                        textConfirm: 'Ya',
-                        textCancel: 'Tidak',
-                        confirmTextColor: Colors.white,
-                        onConfirm: () {
-                          Get.back();
-                          controller.cancelBooking(booking.id);
-                        },
+                        message:
+                            'Anda yakin ingin membatalkan pesanan ini?',
+                        confirmLabel: 'Ya',
+                        cancelLabel: 'Tidak',
+                        onConfirm: () => controller.cancelBooking(booking.id),
                       );
                     },
                   ),

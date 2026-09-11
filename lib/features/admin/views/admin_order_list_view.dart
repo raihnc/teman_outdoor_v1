@@ -6,7 +6,6 @@ import '../../../core/utils/responsive.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/widgets/status_badge.dart';
-import '../../../core/widgets/shimmer_loading.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../core/constants/firestore_constants.dart';
 import '../controllers/admin_order_controller.dart';
@@ -27,17 +26,7 @@ class AdminOrderListView extends StatelessWidget {
               Expanded(
                 child: Obx(() {
                   if (controller.isLoading.value) {
-                    return ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: 5,
-                      separatorBuilder: (_, __) =>
-                          const SizedBox(height: 8),
-                      itemBuilder: (_, __) => const ShimmerLoading(
-                        width: double.infinity,
-                        height: 96,
-                        borderRadius: 12,
-                      ),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   }
                   final bookings = controller.filteredBookings;
                   if (bookings.isEmpty) {

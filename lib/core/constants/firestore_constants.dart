@@ -5,7 +5,6 @@ class FirestoreConstants {
   static const productsCollection = 'products';
   static const bookingsCollection = 'bookings';
   static const reviewsCollection = 'reviews';
-  static const bannersCollection = 'banners';
   static const categoriesCollection = 'categories';
   static const appConfigCollection = 'app_config';
   static const wishlistSubcollection = 'wishlist';

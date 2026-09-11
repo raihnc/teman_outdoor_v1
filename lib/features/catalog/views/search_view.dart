@@ -6,9 +6,8 @@ import 'package:teman_outdoor_v1/core/theme/app_colors.dart';
 import 'package:teman_outdoor_v1/core/utils/responsive.dart';
 import '../../../core/widgets/product_card.dart';
 import '../../../core/widgets/empty_state.dart';
-import '../../../core/widgets/shimmer_loading.dart';
 import '../controllers/catalog_controller.dart';
-import '../../../data/repositories/product_repository.dart';
+import '../../../data/services/firestore_service.dart';
 
 class SearchView extends StatelessWidget {
   const SearchView({super.key});
@@ -27,7 +26,7 @@ class SearchView extends StatelessWidget {
       ),
     );
     final controller = Get.put(
-      CatalogController(Get.find<ProductRepository>()),
+      CatalogController(Get.find<FirestoreService>()),
       tag: 'search',
     );
     return Scaffold(
@@ -44,17 +43,7 @@ class SearchView extends StatelessWidget {
       body: Obx(() {
         final screen = context.screen;
         if (controller.isLoading.value) {
-          return GridView.builder(
-            padding: EdgeInsets.all(screen.pagePadding),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: screen.gridColumns,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: screen.gridAspectRatio,
-            ),
-            itemCount: 6,
-            itemBuilder: (_, __) => ProductCardShimmer(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
         final products = controller.filteredProducts;
         if (products.isEmpty) {

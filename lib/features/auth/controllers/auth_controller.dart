@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/models/user_model.dart';
 import '../../../data/repositories/auth_repository.dart';
+import '../../../data/services/onesignal_service.dart';
 import '../../../core/utils/toast.dart';
+import '../../../core/routes/app_routes.dart';
 
 class AuthController extends GetxController {
   final AuthRepository _authRepository;
@@ -16,6 +18,9 @@ class AuthController extends GetxController {
   bool get isLoggedIn => user.value != null;
   bool get isAdmin => user.value?.isAdmin ?? false;
 
+  /// Route awal sesuai role: admin → AdminShell, lainnya → MainShell.
+  String get homeRoute => isAdmin ? AppRoutes.admin : AppRoutes.main;
+
   @override
   void onInit() {
     super.onInit();
@@ -26,8 +31,13 @@ class AuthController extends GetxController {
     _authRepository.authStateChanges.listen((firebaseUser) async {
       if (firebaseUser != null) {
         await _fetchUserModel();
+        OneSignalService.login(firebaseUser.uid);
+        if (user.value != null) {
+          OneSignalService.setRoleTag(user.value!.role);
+        }
       } else {
         user.value = null;
+        OneSignalService.logout();
       }
       isInitialized.value = true;
     });
@@ -45,7 +55,7 @@ class AuthController extends GetxController {
     isLoading.value = true;
     try {
       user.value = await _authRepository.signInWithEmail(email, password);
-      Get.offAllNamed('/main');
+      Get.offAllNamed(homeRoute);
     } catch (e) {
       showToast(e.toString(), type: ToastType.error);
     } finally {
@@ -65,18 +75,6 @@ class AuthController extends GetxController {
       await _authRepository.signOut();
       Get.offAllNamed('/login');
       showToast('Akun berhasil dibuat, silakan masuk', type: ToastType.success);
-    } catch (e) {
-      showToast(e.toString(), type: ToastType.error);
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<void> resetPassword(String email) async {
-    isLoading.value = true;
-    try {
-      await _authRepository.resetPassword(email);
-      showToast('Email reset password telah dikirim', type: ToastType.success);
     } catch (e) {
       showToast(e.toString(), type: ToastType.error);
     } finally {

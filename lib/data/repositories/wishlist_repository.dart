@@ -13,12 +13,24 @@ class WishlistRepository {
     return List<String>.from(data?['items'] ?? []);
   }
 
+  /// Stream id wishlist — memicu reload produk saat user menambah/menghapus.
+  Stream<List<String>> wishlistIdsStream(String uid) =>
+      _firestoreService.wishlistStream(uid).map((doc) {
+        if (!doc.exists) return <String>[];
+        final data = doc.data() as Map<String, dynamic>?;
+        return List<String>.from(data?['items'] ?? []);
+      });
+
   Future<void> toggleWishlist(String uid, String productId, bool isAdd) async {
     await _firestoreService.toggleWishlist(uid, productId, isAdd);
   }
 
   Future<List<ProductModel>> getWishlistProducts(String uid) async {
     final ids = await getWishlistIds(uid);
+    return getProductsByIds(ids);
+  }
+
+  Future<List<ProductModel>> getProductsByIds(List<String> ids) async {
     if (ids.isEmpty) return [];
     final products = <ProductModel>[];
     for (final id in ids) {

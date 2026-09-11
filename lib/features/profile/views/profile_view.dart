@@ -121,14 +121,6 @@ class ProfileView extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        if (authController.isAdmin)
-                          _buildMenuItem(
-                            context,
-                            icon: Ionicons.grid_outline,
-                            title: 'Admin Panel',
-                            subtitle: 'Kelola produk, pesanan, dan banner',
-                            onTap: () => Get.toNamed(AppRoutes.adminDashboard),
-                          ),
                         _buildMenuItem(
                           context,
                           icon: Ionicons.heart_outline,
