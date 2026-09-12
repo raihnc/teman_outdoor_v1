@@ -57,27 +57,21 @@ class _LoginViewState extends State<LoginView> {
                   child: Form(
                     key: _formKey,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 60),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Icon(
-                            Ionicons.leaf,
-                            color: AppColors.primary,
-                            size: 32,
-                          ),
+                        const SizedBox(height: 30),
+                        Image.asset(
+                          'assets/images/logo.png',
+                          width: 160,
+                          height: 160,
+                          fit: BoxFit.contain,
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 15),
                         Text(
                           'Selamat Datang! 👋',
                           style: Theme.of(context).textTheme.headlineMedium,
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 10),
                         Text(
                           'Masuk ke akun Anda untuk mulai menyewa alat camping.',
                           style: Theme.of(context).textTheme.bodyMedium

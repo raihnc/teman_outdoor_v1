@@ -30,56 +30,48 @@ class ProfileView extends StatelessWidget {
         final screen = context.screen;
         return SafeArea(
           child: Scaffold(
-            body: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      screen.pagePadding,
-                      24,
-                      screen.pagePadding,
-                      0,
-                    ),
-                    child: Text(
-                      'Profil',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
+            body: Column(
+              children: [
+                _buildHeader(context),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Card(
+                    elevation: 0.8,
+                    color: AppColors.background,
                     child: Container(
                       padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: AppColors.primary.withValues(alpha: 0.2),
-                        ),
-                      ),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            radius: 36,
-                            backgroundColor: AppColors.primary.withValues(
-                              alpha: 0.1,
+                          Container(
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.primaryDark,
+                              border: Border.all(
+                                color: AppColors.primaryLight,
+                                width: 2,
+                              ),
                             ),
-                            backgroundImage: user?.photoUrl.isNotEmpty == true
-                                ? NetworkImage(user!.photoUrl)
-                                : null,
-                            child: user?.photoUrl.isEmpty != false
-                                ? Text(
-                                    user?.name.isNotEmpty == true
-                                        ? user!.name[0].toUpperCase()
-                                        : '?',
-                                    style: const TextStyle(
-                                      fontSize: 28,
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  )
-                                : null,
+                            child: CircleAvatar(
+                              radius: 33,
+                              backgroundColor: Colors.transparent,
+                              backgroundImage: user?.photoUrl.isNotEmpty == true
+                                  ? NetworkImage(user!.photoUrl)
+                                  : null,
+                              child: user?.photoUrl.isEmpty != false
+                                  ? Text(
+                                      user?.name.isNotEmpty == true
+                                          ? user!.name[0].toUpperCase()
+                                          : '?',
+                                      style: const TextStyle(
+                                        fontSize: 25,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    )
+                                  : null,
+                            ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -87,23 +79,25 @@ class ProfileView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  user?.name ?? '',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
+                                  user?.name.toUpperCase() ?? '',
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 8),
                                 Text(
                                   user?.email ?? '',
-                                  style: Theme.of(context).textTheme.bodySmall,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: Colors.grey[600]),
                                 ),
                                 if (user?.phone.isNotEmpty == true) ...[
                                   const SizedBox(height: 4),
                                   Text(
                                     user!.phone,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(color: Colors.grey[600]),
                                   ),
                                 ],
                               ],
@@ -114,69 +108,138 @@ class ProfileView extends StatelessWidget {
                     ),
                   ),
                 ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: screen.pagePadding,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screen.pagePadding),
+                  child: _buildMenuGroup(
+                    context,
+                    title: 'Layanan',
+                    children: [
+                      _buildMenuItem(
+                        context,
+                        icon: Ionicons.heart_outline,
+                        title: 'Wishlist',
+                        subtitle: 'Alat camping favorit Anda',
+                        onTap: () => Get.toNamed(AppRoutes.wishlist),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screen.pagePadding),
+                  child: _buildMenuGroup(
+                    context,
+                    title: 'Informasi',
+                    children: [
+                      _buildMenuItem(
+                        context,
+                        icon: Ionicons.storefront_outline,
+                        title: 'Toko',
+                        subtitle:
+                            'Jl. Sukaria 5 No.25, Tamamaung, Kec. Panakukkang, Kota Makassar, Sulawesi Selatan 90231',
+                      ),
+                      _buildMenuItem(
+                        context,
+                        icon: Ionicons.time_outline,
+                        title: 'Jam Operasional',
+                        subtitle: '08:00 - 23:30 WITA',
+                      ),
+                      _buildMenuItem(
+                        context,
+                        icon: Ionicons.information_circle_outline,
+                        title: 'Tentang Aplikasi',
+                        subtitle: 'Versi 1.0.0',
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    screen.pagePadding,
+                    24,
+                    screen.pagePadding,
+                    0,
+                  ),
+                  child: ElevatedButton.icon(
+                    onPressed: () => _showLogoutSheet(authController),
+                    icon: const Icon(
+                      Ionicons.log_out_outline,
+                      color: AppColors.background,
                     ),
-                    child: Column(
-                      children: [
-                        _buildMenuItem(
-                          context,
-                          icon: Ionicons.heart_outline,
-                          title: 'Wishlist',
-                          subtitle: 'Alat camping favorit Anda',
-                          onTap: () => Get.toNamed(AppRoutes.wishlist),
-                        ),
-                        _buildMenuItem(
-                          context,
-                          icon: Ionicons.storefront_outline,
-                          title: 'Toko',
-                          subtitle:
-                              'Jl. Sukaria 5 No.25, Tamamaung, Kec. Panakukkang, Kota Makassar, Sulawesi Selatan 90231',
-                        ),
-                        _buildMenuItem(
-                          context,
-                          icon: Ionicons.time_outline,
-                          title: 'Jam Operasional',
-                          subtitle: '08:00 - 23:30 WITA',
-                        ),
-                        _buildMenuItem(
-                          context,
-                          icon: Ionicons.information_circle_outline,
-                          title: 'Tentang Aplikasi',
-                          subtitle: 'Versi 1.0.0',
-                        ),
-                      ],
+                    label: const Text(
+                      'Keluar',
+                      style: TextStyle(color: AppColors.background),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 52),
+                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
                   ),
                 ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: OutlinedButton.icon(
-                      onPressed: () => _showLogoutSheet(authController),
-                      icon: const Icon(
-                        Ionicons.log_out_outline,
-                        color: AppColors.error,
-                      ),
-                      label: const Text(
-                        'Keluar',
-                        style: TextStyle(color: AppColors.error),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        side: const BorderSide(color: AppColors.error),
-                      ),
-                    ),
-                  ),
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: 96)),
+                const SizedBox(height: 24),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    final screen = context.screen;
+    return Container(
+      color: AppColors.background,
+      padding: EdgeInsets.fromLTRB(
+        screen.pagePadding,
+        10,
+        screen.pagePadding,
+        10,
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuGroup(
+    BuildContext context, {
+    required String title,
+    required List<Widget> children,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 8, top: 20),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ),
+        Card(
+          elevation: 0.8,
+          child: Column(
+            children: [
+              for (var i = 0; i < children.length; i++) ...[
+                if (i > 0)
+                  const Divider(
+                    height: 1,
+                    indent: 68,
+                    color: AppColors.divider,
+                  ),
+                children[i],
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -204,12 +267,12 @@ class ProfileView extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
+                color: AppColors.error,
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Ionicons.log_out_outline,
-                color: AppColors.error,
+                color: AppColors.background,
                 size: 30,
               ),
             ),
@@ -266,18 +329,20 @@ class ProfileView extends StatelessWidget {
     VoidCallback? onTap,
   }) {
     return ListTile(
+      enableFeedback: false,
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(vertical: 4),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: Container(
         padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: AppColors.primary, size: 22),
+        child: Icon(icon, color: AppColors.primary, size: 24),
       ),
       title: Text(title, style: Theme.of(context).textTheme.labelLarge),
-      subtitle: Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+      subtitle: Text(
+        subtitle,
+        style: Theme.of(context).textTheme.bodySmall,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
       trailing: onTap != null
           ? const Icon(Ionicons.chevron_forward, size: 20)
           : null,

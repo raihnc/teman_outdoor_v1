@@ -51,16 +51,12 @@ class BookingRepository {
       return results;
     }
     final snapshot = await _firestoreService.getUserBookings(userId);
-    return snapshot.docs
-        .map((doc) => BookingModel.fromFirestore(doc))
-        .toList();
+    return snapshot.docs.map((doc) => BookingModel.fromFirestore(doc)).toList();
   }
 
   Future<List<BookingModel>> getAllBookings({String? status}) async {
     final snapshot = await _firestoreService.getAllBookings(status: status);
-    return snapshot.docs
-        .map((doc) => BookingModel.fromFirestore(doc))
-        .toList();
+    return snapshot.docs.map((doc) => BookingModel.fromFirestore(doc)).toList();
   }
 
   Future<BookingModel?> getBooking(String id) async {
@@ -104,6 +100,9 @@ class BookingRepository {
         throw Exception('Booking tidak bisa dibatalkan pada status ini');
       }
 
+      // Read produk harus selesai sebelum write pertama (batasan transaksi
+      // Firestore), jadi restore stok dipanggil lebih dulu.
+      await _restoreStock(tx, data);
       tx.update(_firestoreService.bookingRef(bookingId), {
         'status': FirestoreConstants.statusCancelled,
         'updatedAt': FieldValue.serverTimestamp(),
@@ -111,7 +110,6 @@ class BookingRepository {
           _statusEntry(FirestoreConstants.statusCancelled, actorUid),
         ]),
       });
-      await _restoreStock(tx, data);
     });
   }
 
@@ -126,6 +124,7 @@ class BookingRepository {
         throw Exception('Booking belum diambil');
       }
 
+      await _restoreStock(tx, data);
       tx.update(_firestoreService.bookingRef(bookingId), {
         'status': FirestoreConstants.statusReturned,
         'updatedAt': FieldValue.serverTimestamp(),
@@ -133,7 +132,6 @@ class BookingRepository {
           _statusEntry(FirestoreConstants.statusReturned, userId),
         ]),
       });
-      await _restoreStock(tx, data);
     });
   }
 
@@ -143,7 +141,10 @@ class BookingRepository {
 
   /// Tulis ulang stok produk sesuai quantity booking (tidak mengubah
   /// totalBooked — popularitas bersifat historis).
-  Future<void> _restoreStock(Transaction tx, Map<String, dynamic> bookingData) async {
+  Future<void> _restoreStock(
+    Transaction tx,
+    Map<String, dynamic> bookingData,
+  ) async {
     final productId = bookingData['productId'] as String?;
     final quantity = (bookingData['quantity'] ?? 1) as int;
     if (productId == null || productId.isEmpty) return;
@@ -165,14 +166,17 @@ class BookingRepository {
 
   // ── Real-time streams ──
   Stream<List<BookingModel>> userBookingsStream(String userId) =>
-      _firestoreService.getUserBookingsStream(userId)
-          .map((snap) => snap.docs
-              .map((doc) => BookingModel.fromFirestore(doc))
-              .toList());
+      _firestoreService
+          .getUserBookingsStream(userId)
+          .map(
+            (snap) => snap.docs
+                .map((doc) => BookingModel.fromFirestore(doc))
+                .toList(),
+          );
 
   Stream<List<BookingModel>> allBookingsStream() =>
-      _firestoreService.allBookingsStream()
-          .map((snap) => snap.docs
-              .map((doc) => BookingModel.fromFirestore(doc))
-              .toList());
+      _firestoreService.allBookingsStream().map(
+        (snap) =>
+            snap.docs.map((doc) => BookingModel.fromFirestore(doc)).toList(),
+      );
 }

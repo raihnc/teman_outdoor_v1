@@ -105,25 +105,27 @@ class ProductDetailView extends StatelessWidget {
                 bottom: 16,
                 left: 0,
                 right: 0,
-                child: Obx(() => Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        product.images.length,
-                        (i) => Container(
-                          width: i == controller.selectedImageIndex.value
-                              ? 24
-                              : 8,
-                          height: 8,
-                          margin: const EdgeInsets.symmetric(horizontal: 3),
-                          decoration: BoxDecoration(
-                            color: i == controller.selectedImageIndex.value
-                                ? Colors.white
-                                : Colors.white.withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
+                child: Obx(
+                  () => Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      product.images.length,
+                      (i) => Container(
+                        width: i == controller.selectedImageIndex.value
+                            ? 24
+                            : 8,
+                        height: 8,
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        decoration: BoxDecoration(
+                          color: i == controller.selectedImageIndex.value
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(4),
                         ),
                       ),
-                    )),
+                    ),
+                  ),
+                ),
               ),
           ],
         ),
@@ -156,10 +158,7 @@ class ProductDetailView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          product.name,
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+        Text(product.name, style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 8),
         Row(
           children: [
@@ -176,9 +175,9 @@ class ProductDetailView extends StatelessWidget {
           children: [
             Text(
               CurrencyFormatter.formatPerDay(product.pricePerDay),
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppColors.primary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(color: AppColors.primary),
             ),
             const Spacer(),
             Container(
@@ -239,8 +238,8 @@ class ProductDetailView extends StatelessWidget {
                     Text(
                       '${entry.value}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
@@ -264,9 +263,9 @@ class ProductDetailView extends StatelessWidget {
         Text(
           controller.product.description,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-                height: 1.6,
-              ),
+            color: AppColors.textSecondary,
+            height: 1.6,
+          ),
         ),
       ],
     );
@@ -305,58 +304,133 @@ class ProductDetailView extends StatelessWidget {
             ),
           )
         else
-          ...controller.reviews.map((review) => Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                          child: Text(
-                            review.userName.isNotEmpty
-                                ? review.userName[0].toUpperCase()
-                                : '?',
-                            style: const TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
+          ...controller.reviews.map(
+            (review) => Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 16,
+                        backgroundColor: AppColors.primary.withValues(
+                          alpha: 0.1,
+                        ),
+                        child: Text(
+                          review.userName.isNotEmpty
+                              ? review.userName[0].toUpperCase()
+                              : '?',
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              review.userName,
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            StarRating(
+                              rating: review.rating.toDouble(),
+                              size: 14,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (review.comment.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(review.comment),
+                  ],
+                  if (review.photos.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 72,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: review.photos.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 8),
+                        itemBuilder: (_, i) => GestureDetector(
+                          onTap: () =>
+                              _showPhotoPreview(context, review.photos[i]),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: CachedNetworkImage(
+                              imageUrl: review.photos[i],
+                              width: 72,
+                              height: 72,
+                              fit: BoxFit.cover,
+                              placeholder: (_, __) => ColoredBox(
+                                color: AppColors.surface,
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              ),
+                              errorWidget: (_, __, ___) => const ColoredBox(
+                                color: AppColors.border,
+                                child: Center(
+                                  child: Icon(Ionicons.image_outline, size: 24),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                review.userName,
-                                style: Theme.of(context).textTheme.labelLarge,
-                              ),
-                              StarRating(
-                                rating: review.rating.toDouble(),
-                                size: 14,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    if (review.comment.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Text(review.comment),
-                    ],
                   ],
-                ),
-              )),
+                ],
+              ),
+            ),
+          ),
       ],
+    );
+  }
+
+  void _showPhotoPreview(BuildContext context, String url) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(24),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: CachedNetworkImage(
+            imageUrl: url,
+            fit: BoxFit.contain,
+            placeholder: (_, __) => Container(
+              width: double.infinity,
+              height: 300,
+              color: Colors.black,
+              child: const Center(child: CircularProgressIndicator()),
+            ),
+            errorWidget: (_, __, ___) => Container(
+              width: double.infinity,
+              height: 300,
+              color: Colors.black,
+              child: const Icon(
+                Ionicons.image_outline,
+                color: Colors.white70,
+                size: 48,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -387,23 +461,26 @@ class ProductDetailView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.border),
               ),
-              child: Obx(() => IconButton(
-                    onPressed: controller.toggleWishlist,
-                    icon: Icon(
-                      controller.isWishlisted.value
-                          ? Ionicons.heart
-                          : Ionicons.heart_outline,
-                      color: controller.isWishlisted.value
-                          ? AppColors.error
-                          : AppColors.textPrimary,
-                    ),
-                  )),
+              child: Obx(
+                () => IconButton(
+                  onPressed: controller.toggleWishlist,
+                  icon: Icon(
+                    controller.isWishlisted.value
+                        ? Ionicons.heart
+                        : Ionicons.heart_outline,
+                    color: controller.isWishlisted.value
+                        ? AppColors.error
+                        : AppColors.textPrimary,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: CustomButton(
-                label:
-                    controller.product.stock > 0 ? 'Sewa Sekarang' : 'Stok Habis',
+                label: controller.product.stock > 0
+                    ? 'Sewa Sekarang'
+                    : 'Stok Habis',
                 icon: Ionicons.cart_outline,
                 onPressed: controller.product.stock > 0
                     ? () {
@@ -417,9 +494,8 @@ class ProductDetailView extends StatelessWidget {
                                 top: Radius.circular(20),
                               ),
                             ),
-                            builder: (_) => BookingSheet(
-                              product: controller.product,
-                            ),
+                            builder: (_) =>
+                                BookingSheet(product: controller.product),
                           );
                         });
                       }

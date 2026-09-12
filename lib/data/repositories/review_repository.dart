@@ -24,48 +24,59 @@ class ReviewRepository {
         throw Exception('Ulasan hanya untuk booking yang sudah selesai');
       }
 
+      // Semua read harus selesai sebelum write pertama (batasan transaksi
+      // Firestore), jadi product dibaca di sini.
+      final productDoc = await tx.get(
+        _firestoreService.productRef(review.productId),
+      );
+      if (!productDoc.exists) {
+        throw Exception('Produk tidak ditemukan');
+      }
+
       tx.set(_firestoreService.reviewsRef.doc(), review.toMap());
       tx.update(_firestoreService.bookingRef(review.bookingId), {
         'reviewed': true,
       });
-      await _updateProductRating(tx, review);
+      _updateProductRating(tx, productDoc, review);
     });
   }
 
   Future<List<ReviewModel>> getProductReviews(String productId) async {
     final snapshot = await _firestoreService.getProductReviews(productId);
-    return snapshot.docs
-        .map((doc) => ReviewModel.fromFirestore(doc))
-        .toList();
+    return snapshot.docs.map((doc) => ReviewModel.fromFirestore(doc)).toList();
   }
 
   Stream<List<ReviewModel>> productReviewsStream(String productId) =>
-      _firestoreService.productReviewsStream(productId)
-          .map((snap) => snap.docs
-              .map((doc) => ReviewModel.fromFirestore(doc))
-              .toList());
+      _firestoreService
+          .productReviewsStream(productId)
+          .map(
+            (snap) =>
+                snap.docs.map((doc) => ReviewModel.fromFirestore(doc)).toList(),
+          );
 
   Stream<List<ReviewModel>> allReviewsStream() =>
-      _firestoreService.allReviewsStream()
-          .map((snap) => snap.docs
-              .map((doc) => ReviewModel.fromFirestore(doc))
-              .toList());
+      _firestoreService.allReviewsStream().map(
+        (snap) =>
+            snap.docs.map((doc) => ReviewModel.fromFirestore(doc)).toList(),
+      );
 
   Future<void> deleteReview(String id) async {
     await _firestoreService.deleteReview(id);
   }
 
   /// Rekomputasi averageRating & totalReviews produk berbasis data lama
-  /// (dibaca dalam transaksi yang sama).
-  Future<void> _updateProductRating(Transaction tx, ReviewModel review) async {
-    final productDoc = await tx.get(_firestoreService.productRef(review.productId));
-    if (!productDoc.exists) return;
-
+  /// (dibaca dalam transaksi yang sama, sebelum write apa pun).
+  void _updateProductRating(
+    Transaction tx,
+    DocumentSnapshot<Object?> productDoc,
+    ReviewModel review,
+  ) {
     final data = productDoc.data() as Map<String, dynamic>;
     final totalReviews = (data['totalReviews'] ?? 0) as int;
     final averageRating = ((data['averageRating'] ?? 0) as num).toDouble();
     final newTotal = totalReviews + 1;
-    final newAverage = ((averageRating * totalReviews) + review.rating) / newTotal;
+    final newAverage =
+        ((averageRating * totalReviews) + review.rating) / newTotal;
 
     tx.update(_firestoreService.productRef(review.productId), {
       'totalReviews': newTotal,

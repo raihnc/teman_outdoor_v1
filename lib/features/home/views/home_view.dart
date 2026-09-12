@@ -138,23 +138,13 @@ class HomeView extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [AppColors.primary, AppColors.primaryDark],
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Icon(
-                    Ionicons.leaf,
-                    color: Colors.white,
-                    size: 22,
-                  ),
+                Image.asset(
+                  'assets/images/logo.png',
+                  width: 70,
+                  height: 70,
+                  fit: BoxFit.cover,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 5),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,7 +153,7 @@ class HomeView extends StatelessWidget {
                         'Teman Outdoor',
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary,
                             ),
                       ),

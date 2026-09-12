@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:ionicons/ionicons.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../controllers/auth_controller.dart';
@@ -22,7 +21,7 @@ class _SplashViewState extends State<SplashView> {
 
   void _checkAuth() async {
     final authController = Get.find<AuthController>();
-    await Future.delayed(const Duration(milliseconds: 1600));
+    await Future.delayed(const Duration(milliseconds: 2500));
     if (!mounted) return;
     if (authController.isLoggedIn) {
       Get.offAllNamed(authController.homeRoute);
@@ -98,31 +97,17 @@ class _SplashViewState extends State<SplashView> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Logo
-                    Container(
-                      width: 88,
-                      height: 88,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(26),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            blurRadius: 32,
-                            offset: const Offset(0, 12),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Ionicons.leaf,
-                        color: AppColors.primary,
-                        size: 44,
-                      ),
+                    Image.asset(
+                      'assets/images/logo.png',
+                      width: 180,
+                      height: 180,
+                      fit: BoxFit.contain,
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 5),
                     const Text(
                       'Teman Outdoor',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 30,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.5,
                         color: Colors.white,

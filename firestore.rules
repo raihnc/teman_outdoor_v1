@@ -44,19 +44,13 @@ service cloud.firestore {
       // Read: owner atau admin
       allow read: if isOwner(userId) || isAdmin();
 
-      // Create: saat registrasi, user create doc sendiri (role wajib renter)
+      // Create: saat registrasi, user create doc sendiri
       allow create: if isAuthenticated() && request.auth.uid == userId
         && request.resource.data.role == 'renter'
         && request.resource.data.keys().hasAll(['name', 'email', 'phone', 'photoUrl', 'role']);
 
-      // Update: admin bebas; owner hanya bisa ubah profil sendiri
-      // (nama, telepon, foto) — TIDAK bisa ubah role/email.
-      allow update: if isAdmin()
-        || (
-          isOwner(userId)
-          && request.resource.data.diff(resource.data).affectedKeys()
-               .hasOnly(['name', 'phone', 'photoUrl'])
-        );
+      // Update: owner bisa edit profile sendiri, admin bisa edit semua
+      allow update: if isOwner(userId) || isAdmin();
 
       // Delete: tidak diizinkan
       allow delete: if false;
@@ -75,7 +69,7 @@ service cloud.firestore {
       // Read: semua authenticated user
       allow read: if isAuthenticated();
 
-      // Create: admin only (wajib semua field inti)
+      // Create/update/delete: admin only
       allow create: if isAdmin()
         && request.resource.data.keys().hasAll([
           'name', 'description', 'pricePerDay', 'category',
@@ -84,11 +78,11 @@ service cloud.firestore {
         ]);
 
       // Update: admin bebas; renter hanya untuk agregat dari transaksi
-      // booking/review (stok, popularitas, rating). Renter tidak bisa ubah
-      // harga, nama, deskripsi, dsb.
+      // booking/review (stok, popularitas, rating) — tidak bisa ubah harga,
+      // nama, dsb.
       allow update: if isAdmin()
         || (
-          isRenter()
+          isAuthenticated()
           && request.resource.data.diff(resource.data).affectedKeys()
                .hasOnly(['stock', 'totalBooked', 'averageRating', 'totalReviews'])
           && request.resource.data.stock >= 0
@@ -98,7 +92,6 @@ service cloud.firestore {
           && request.resource.data.totalBooked >= resource.data.totalBooked
         );
 
-      // Delete: admin only
       allow delete: if isAdmin();
     }
 
@@ -111,9 +104,8 @@ service cloud.firestore {
         resource.data.userId == request.auth.uid || isAdmin()
       );
 
-      // Create: authenticated user, harus isi userId sendiri.
-      // Validasi server-side: harga = snapshot produk, stok cukup,
-      // totalPrice = pricePerDay × duration × quantity, status awal pending.
+      // Create: authenticated user, harus isi userId sendiri
+      // Validasikan stok + total harga dari data produk (server-side)
       allow create: if isAuthenticated()
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.keys().hasAll([
@@ -134,8 +126,8 @@ service cloud.firestore {
             * request.resource.data.quantity
         && request.resource.data.returnDate > request.resource.data.pickupDate;
 
-      // Update: admin bebas; renter hanya bisa ubah status sesuai alur PRD
-      // atau menandai reviewed — tanpa menyentuh field lain (pertama kali).
+      // Update: admin bebas; renter hanya bisa ubah status sesuai alur PRD,
+      // menandai reviewed, tanpa menyentuh field lain.
       allow update: if isAuthenticated() && (
         isAdmin()
         || (
@@ -163,9 +155,7 @@ service cloud.firestore {
       // Read: semua authenticated user
       allow read: if isAuthenticated();
 
-      // Create: authenticated user, harus isi userId sendiri.
-      // Wajib booking milik user, produk sama, status completed, dan
-      // belum pernah di-review (anti duplikat).
+      // Create: authenticated user, harus isi userId sendiri
       allow create: if isAuthenticated()
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.keys().hasAll([
@@ -176,14 +166,14 @@ service cloud.firestore {
         && request.resource.data.rating <= 5
         && request.resource.data.comment.size() <= 500
         && request.resource.data.photos.size() <= 3
+        // Ulasan hanya untuk booking milik user, produk yang sama, dan
+        // status selesai (completed).
         && get(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.userId
             == request.auth.uid
         && get(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.productId
             == request.resource.data.productId
         && get(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.status
-            == 'completed'
-        && get(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.reviewed
-            == false;
+            == 'completed';
 
       // Update: tidak diizinkan (no edit review)
       allow update: if false;
@@ -198,7 +188,7 @@ service cloud.firestore {
     // Banners collection
     // ═══════════════════════════════════════════
     match /banners/{bannerId} {
-      // Read: semua authenticated user (stream home)
+      // Read: semua authenticated user
       allow read: if isAuthenticated();
 
       // CRUD: admin only
@@ -209,7 +199,7 @@ service cloud.firestore {
     // Categories collection
     // ═══════════════════════════════════════════
     match /categories/{categoryId} {
-      // Read: semua authenticated user (stream home)
+      // Read: semua authenticated user
       allow read: if isAuthenticated();
 
       // CRUD: admin only
