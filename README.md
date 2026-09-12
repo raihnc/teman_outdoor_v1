@@ -1,83 +1,89 @@
-# Teman Outdoor — Rental Alat Outdoor Makassar
+<div align="center">
 
-Aplikasi Flutter (GetX) untuk rental alat camping/outdoor di Makassar.
-Frontend dibangun sesuai PRD: katalog, booking, QRIS/tunai, wishlist,
-rating, dan panel admin — dengan tema outdoor (hijau hutan, terracotta, cream),
-responsif (mobile → tablet/desktop), dan animasi halus.
+# 🏕️ Teman Outdoor
 
-## Run
+**Platform Rental Alat Camping & Outdoor — Makassar**
 
-```bash
-flutter pub get
-flutter run
-```
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
+[![GetX](https://img.shields.io/badge/State%20Management-GetX-8A2BE2)](https://pub.dev/packages/get)
+[![Firebase](https://img.shields.io/badge/Backend-Firebase-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com)
+[![Cloudinary](https://img.shields.io/badge/Media-Cloudinary-3448C5?logo=cloudinary&logoColor=white)](https://cloudinary.com)
+[![OneSignal](https://img.shields.io/badge/Push-OneSignal-E54B4D)](https://onesignal.com)
+![Status](https://img.shields.io/badge/Status-Draft%20v1.0-gray)
 
-## Struktur
+**Katalog digital · Booking mandiri · Panel admin in-app — pengganti DM Instagram & brosur.**
+
+</div>
+
+---
+
+## 📌 Ringkasan
+
+Aplikasi mobile **Teman Outdoor** menghubungkan penyewa alat camping di Makassar dengan **satu toko rental**. Penyewa bisa:
+
+- 🧭 Menelusuri katalog & cek ketersediaan stok secara real-time
+- 🗓️ Booking mandiri dengan pilihan tanggal & durasi sewa
+- 💵 Bayar **cash / QRIS** saat pickup di toko
+- ⭐ Memberi rating & ulasan setelah pengembalian
+- ⚙️ Admin mengelola produk, order, dan ulasan dari dalam aplikasi
+
+---
+
+## 🛠️ Teknologi
+
+| Lapisan | Teknologi | Peran |
+|---|---|---|
+| **Frontend** | Flutter (Android · iOS · Web · Desktop) | Aplikasi multi-platform |
+| **State & Routing** | GetX | State management, routing, dependency injection |
+| **Backend** | Firebase Auth | Registrasi/login email + password |
+| | Cloud Firestore | Penyimpanan data, security rules, transaksi client |
+| | Firebase Analytics *(opsional)* | Tracking instalasi & funnel |
+| **Media** | Cloudinary | Upload foto produk & ulasan |
+| **Notifikasi** | OneSignal | Push notification (opsional) |
+| **UI Pendukung** | google_fonts · ionicons · cached_network_image · intl · fluttertoast · loading_indicator | Tampilan & pengalaman pengguna |
+
+> 💡 **Tanpa Cloud Functions** — logika stok, `totalBooked`, dan agregasi rating memakai **transaksi client-side**; konfigurasi di `.env`, `firestore.rules`, dan `firestore.indexes.json`.
+
+---
+
+## 📂 Struktur Folder (`lib/`)
 
 ```
 lib/
-├── app/
-│   ├── bindings/          # GetX dependency injection
-│   ├── controllers/       # Auth, Catalog, Detail, Booking, Wishlist, Admin
-│   ├── routes/            # Route name & definitions
-│   └── theme/             # AppColors, AppTheme, breakpoints
-├── core/
-│   ├── constants/         # Konstanta, formatter Rupiah/tanggal, validators
-│   └── widgets/           # ToolCard, StarRating, PrimaryButton, skeleton, dll
-├── data/
-│   ├── models/            # User, Tool, Booking, Review, Wishlist, PaymentMethod
-│   └── repositories/      # Auth, Catalog, Booking, Wishlist, Review, Admin
-└── ui/
-    ├── splash/ auth/ home/ detail/ booking/ bookings/ wishlist/ profile/ admin/
+├── core/        # 🎨 Tema, warna, route + guard admin, konstanta,
+│                #    util (Rupiah/tanggal/responsif), widget reuse
+├── data/        # 🗃️ Model, service (Firebase/Cloudinary/OneSignal),
+│                #    repository (auth, product, booking, review, wishlist)
+├── features/    # 📱 Fitur per domain (lihat di bawah)
+├── main.dart    # 🚀 Entry point
+└── firebase_options.dart
 ```
 
-## Status Frontend (per PRD)
+### Fitur per Domain
 
-- US-01 Registrasi & Login (email + password, verifikasi, pesan error ID)
-- US-02 Katalog: grid responsif, search, filter kategori, skeleton loading
-- US-03 Detail alat: galeri swipe, spesifikasi, pilih tanggal, cek ketersediaan, total auto
-- US-04 & 05 Booking + Checkout: ringkasan, QRIS/Tunai, instruksi pembayaran
-- US-06 & 07 Pickup & pengembalian: info toko, QR bukti booking, timeline status
-- US-08 Rating & ulasan (bintang 1–5, maks 500 karakter)
-- US-09 Wishlist (toggle hati, halaman wishlist)
-- US-10 Admin: dashboard statistik, kelola status order, CRUD inventaris, kelola ulasan
+| Path | Konten |
+|---|---|
+| `features/auth/` | Splash, login, register, session persist |
+| `features/home/` | Banner, kategori, rekomendasi & item baru |
+| `features/catalog/` | Grid katalog, search, filter, sort, pagination |
+| `features/product_detail/` | Galeri, spesifikasi, cek ketersediaan, harga otomatis |
+| `features/booking/` | Bottom sheet pilih tanggal & durasi, ringkasan total |
+| `features/orders/` | Riwayat pesanan, timeline status, batalkan order |
+| `features/wishlist/` | Simpan & akses cepat item favorit |
+| `features/reviews/` | Rating bintang 1–5, ulasan + foto |
+| `features/profile/` | Edit profil, kontak admin, logout |
+| `features/admin/` | Dashboard, CRUD produk, manajemen order & ulasan |
 
-## Backend (Firebase + Cloudinary + OneSignal)
+---
 
-Tanpa Cloud Functions — semua logika memakai Firestore rules + transaction
-client (stok, `totalBooked`, agregasi rating), dan notifikasi real-time v1.0
-menggunakan Firestore streams (fallback resmi PRD §5.2).
+## 💥 Dampak Nyata untuk Teman Outdoor
 
-### Setup sekali saja
+| Dampak | Hasil |
+|---|---|
+| 🚫 **Bebas bottleneck manual** | Katalog, harga, & stok transparan; penyewa booking mandiri tanpa DM/brosur; rules + transaksi mencegah overbooking |
+| ⚡ **Operasional admin lebih cepat** | Panel in-app: CRUD inventaris, ubah status order, kelola ulasan; respons order ≤ 2 jam |
+| 📈 **Revenue & retensi meningkat** | Funnel detail → booking, wishlist & riwayat mendorong repeat order, rating jadi social proof |
+| 💰 **Efisiensi modal** | Booking terstruktur + dashboard statistik → antisipasi permintaan, alat tidak menganggur |
+| 🏆 **Keunggulan kompetitif** | Platform terpusat pertama di Makassar vs kompetitor manual; siap scale (multi-toko, Midtrans/QRIS) di v1.1 |
 
-1. **Firebase**: aktifkan Authentication (Email/Password) + Cloud Firestore.
-   Pastikan `android/app/google-services.json` & `lib/firebase_options.dart`
-   cocok dengan project (`firebase init`).
-2. **Cloudinary**: buat unsigned upload preset `teman_outdoor` (folder
-   `teman_outdoor/`, JPG/WebP, max 5MB). Isi `CLOUDINARY_CLOUD_NAME` &
-   `CLOUDINARY_UPLOAD_PRESET` di `.env` (lihat `.env.example`).
-3. **OneSignal** (opsional untuk push ke device): daftarkan app, isi
-   `ONESIGNAL_APP_ID` di `.env`. Jika kosong, OneSignal nonaktif dan app
-   tetap berjalan normal. `external user id` = Firebase UID, tag `role`
-   (`renter`/`admin`) disinkronkan otomatis saat login/logout.
-4. **Admin account**: buat manual di Firebase Console → Authentication →
-   tambah user → Firestore `users/{uid}` dengan `role: 'admin'`.
-
-### Deploy rules & indexes
-
-```bash
-firebase login
-firebase deploy --only firestore:rules
-firebase deploy --only firestore:indexes
-```
-
-### Integritas data (transaction client)
-
-- Booking: transaction menulis booking `pending` + stok berkurang +
-  `totalBooked` naik; stok dikembalikan saat cancel/returned.
-- Ulasan: transaction menulis review + update `averageRating`/`totalReviews`
-  produk + `booking.reviewed = true`.
-- Real-time: daftar order renter & admin otomatis sinkron via stream;
-  admin mendapat toast "Booking baru" untuk order `pending` baru.
-- Security rules membatasi renter: update produk hanya pada agregat
-  (stok/rating/popularitas), transisi booking hanya sesuai alur PRD.
+---
