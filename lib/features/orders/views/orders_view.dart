@@ -32,7 +32,10 @@ class OrdersView extends StatelessWidget {
       init: Get.find<OrdersController>(),
       builder: (controller) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Pesanan Saya'), surfaceTintColor: Colors.transparent),
+          appBar: AppBar(
+            title: const Text('Pesanan Saya'),
+            surfaceTintColor: Colors.transparent,
+          ),
           body: Column(
             children: [
               _buildTabBar(context, controller),
@@ -80,66 +83,68 @@ class OrdersView extends StatelessWidget {
   }
 
   Widget _buildTabBar(BuildContext context, OrdersController controller) {
-    return Obx(() => Container(
-          margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => controller.selectedTab.value = 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
+    return Obx(
+      () => Container(
+        margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => controller.selectedTab.value = 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: controller.selectedTab.value == 0
+                        ? AppColors.primary
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    'Aktif (${controller.activeBookings.length})',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
                       color: controller.selectedTab.value == 0
-                          ? AppColors.primary
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      'Aktif (${controller.activeBookings.length})',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: controller.selectedTab.value == 0
-                            ? Colors.white
-                            : AppColors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
+                          ? Colors.white
+                          : AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => controller.selectedTab.value = 1,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
+            ),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => controller.selectedTab.value = 1,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: controller.selectedTab.value == 1
+                        ? AppColors.primary
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    'Riwayat (${controller.historyBookings.length})',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
                       color: controller.selectedTab.value == 1
-                          ? AppColors.primary
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      'Riwayat (${controller.historyBookings.length})',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: controller.selectedTab.value == 1
-                            ? Colors.white
-                            : AppColors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
+                          ? Colors.white
+                          : AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildOrderCard(
@@ -149,74 +154,72 @@ class OrdersView extends StatelessWidget {
   ) {
     return GestureDetector(
       onTap: () => Get.toNamed(AppRoutes.orderDetail, arguments: booking),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: CachedNetworkImage(
-                imageUrl: booking.productThumbnail,
-                width: 72,
-                height: 72,
-                fit: BoxFit.cover,
-                placeholder: (_, __) => const SizedBox(
+      child: Card(
+        elevation: 0.8,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: CachedNetworkImage(
+                  imageUrl: booking.productThumbnail,
                   width: 72,
                   height: 72,
-                  child: Center(
-                    child: SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => const SizedBox(
+                    width: 72,
+                    height: 72,
+                    child: Center(
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
                     ),
                   ),
-                ),
-                errorWidget: (_, __, ___) => Container(
-                  width: 72,
-                  height: 72,
-                  color: AppColors.surface,
-                  child: const Icon(Ionicons.image_outline),
+                  errorWidget: (_, __, ___) => Container(
+                    width: 72,
+                    height: 72,
+                    color: AppColors.primaryDark.withValues(alpha: 0.1),
+                    child: const Icon(Ionicons.image_outline),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    booking.productName,
-                    style: Theme.of(context).textTheme.titleSmall,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${DateFormatter.formatDayMonth(booking.pickupDate)} · ${booking.duration} hari',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        CurrencyFormatter.format(booking.totalPrice),
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: AppColors.primary,
-                            ),
-                      ),
-                      StatusBadge(status: booking.status, compact: true),
-                    ],
-                  ),
-                ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      booking.productName,
+                      style: Theme.of(context).textTheme.titleSmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${DateFormatter.formatDayMonth(booking.pickupDate)} · ${booking.duration} hari',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          CurrencyFormatter.format(booking.totalPrice),
+                          style: Theme.of(context).textTheme.labelLarge
+                              ?.copyWith(color: AppColors.primary),
+                        ),
+                        StatusBadge(status: booking.status, compact: true),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

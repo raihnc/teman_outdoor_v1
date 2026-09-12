@@ -26,7 +26,6 @@ class AppPages {
     GetPage(
       name: AppRoutes.splash,
       page: () => const SplashView(),
-
       customTransition: RightToLeftJoinedTransition(),
       transitionDuration: const Duration(milliseconds: 400),
       curve: Curves.easeInOut,

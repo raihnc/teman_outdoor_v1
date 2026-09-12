@@ -16,95 +16,92 @@ class ProductCard extends StatelessWidget {
     final isOutOfStock = product.stock <= 0;
 
     return GestureDetector(
-      onTap: () => Get.toNamed(
-        AppRoutes.productDetail,
-        arguments: product,
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
-        ),
-        clipBehavior: Clip.antiAlias,
+      onTap: () => Get.toNamed(AppRoutes.productDetail, arguments: product),
+      child: Card(
+        elevation: 0.8,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AspectRatio(
               aspectRatio: 4 / 3,
-              child: Stack(
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: product.thumbnailUrl,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => Container(
-                      color: AppColors.surface,
-                      child: const Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
-                    errorWidget: (_, __, ___) => Container(
-                      color: AppColors.surface,
-                      child: const Icon(
-                        Icons.image_not_supported_outlined,
-                        color: AppColors.textHint,
-                      ),
-                    ),
-                  ),
-                  if (isOutOfStock)
-                    Positioned.fill(
-                      child: Container(
-                        color: Colors.black.withValues(alpha: 0.5),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
+                child: Stack(
+                  children: [
+                    CachedNetworkImage(
+                      imageUrl: product.thumbnailUrl,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => ColoredBox(
+                        color: AppColors.surface,
                         child: const Center(
-                          child: Text(
-                            'STOK HABIS',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                              letterSpacing: 1,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                      errorWidget: (_, __, ___) => ColoredBox(
+                        color: AppColors.primaryDark.withValues(alpha: 0.1),
+                        child: const Icon(
+                          Icons.image_not_supported_outlined,
+                          color: AppColors.textHint,
+                        ),
+                      ),
+                    ),
+                    if (isOutOfStock)
+                      Positioned.fill(
+                        child: ColoredBox(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          child: const Center(
+                            child: Text(
+                              'STOK HABIS',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                letterSpacing: 1,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  if (product.averageRating > 0)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.6),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              color: AppColors.warning,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              product.averageRating.toStringAsFixed(1),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                    if (product.averageRating > 0)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.6),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: AppColors.warning,
+                                size: 14,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 4),
+                              Text(
+                                product.averageRating.toStringAsFixed(1),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
             Padding(
@@ -121,9 +118,9 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     product.category.toUpperCase(),
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      letterSpacing: 0.5,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelSmall?.copyWith(letterSpacing: 0.5),
                   ),
                   const SizedBox(height: 8),
                   Row(

@@ -29,7 +29,7 @@ class HomeView extends StatelessWidget {
                       slivers: [
                         SliverToBoxAdapter(
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 4, 16, 15),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 15),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -86,7 +86,7 @@ class HomeView extends StatelessWidget {
                           ),
                         ),
                         SliverPadding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
                           sliver: Obx(() {
                             if (controller.isLoading.value) {
                               return const SliverToBoxAdapter(
@@ -129,24 +129,29 @@ class HomeView extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     return SafeArea(
+      bottom: false,
       child: Container(
         color: AppColors.background,
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 2),
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [AppColors.primary, AppColors.primaryDark],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: const Icon(
                     Ionicons.leaf,
-                    color: AppColors.primary,
-                    size: 24,
+                    color: Colors.white,
+                    size: 22,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -156,45 +161,39 @@ class HomeView extends StatelessWidget {
                     children: [
                       Text(
                         'Teman Outdoor',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
-                      Text(
-                        'Makassar',
-                        style: Theme.of(context).textTheme.bodySmall,
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          const Icon(
+                            Ionicons.location_outline,
+                            color: AppColors.textSecondary,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Makassar',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AppColors.textSecondary),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 15),
-            GestureDetector(
-              onTap: () => Get.toNamed(AppRoutes.search),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(
-                      Ionicons.search_outline,
-                      color: AppColors.textHint,
-                      size: 20,
-                    ),
-                    SizedBox(width: 13),
-                    Text(
-                      'Cari alat camping...',
-                      style: TextStyle(color: AppColors.textHint),
-                    ),
-                  ],
-                ),
-              ),
+            const SizedBox(height: 14),
+            Text(
+              'Siap berpetualang? Temukan alat outdoor terbaikmu di sini.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -210,7 +209,7 @@ class HomeView extends StatelessWidget {
       );
     }
     return SizedBox(
-      height: 250,
+      height: 260,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 10),
