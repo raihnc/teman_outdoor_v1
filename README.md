@@ -11,6 +11,8 @@
 [![OneSignal](https://img.shields.io/badge/Push-OneSignal-E54B4D)](https://onesignal.com)
 ![Status](https://img.shields.io/badge/Status-Draft%20v1.0-gray)
 
+[![Download APK](https://img.shields.io/badge/Download%20APK-Google%20Drive-4285F4?logo=google-drive&logoColor=white)](https://drive.google.com/file/d/1PFHGMlUlnriST4zT2cJiY-RTDLgDmKOh/view?usp=sharing)
+
 **Katalog digital · Booking mandiri · Panel admin in-app — pengganti DM Instagram & brosur.**
 
 </div>
